@@ -150,34 +150,8 @@ h2 {
     gap: 30px;
 }
 
-.players-input h2,
 .deck-selection h2 {
     font-size: 1.3rem;
-}
-
-#player-inputs {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 15px;
-}
-
-.player-name-input {
-    padding: 12px;
-    border: 1px solid #d0d0d0;
-    border-radius: 6px;
-    font-size: 0.95rem;
-    transition: border-color 0.2s;
-    background: white;
-}
-
-.player-name-input:focus {
-    outline: none;
-    border-color: #1a1a1a;
-}
-
-#add-player-btn {
-    width: 100%;
 }
 
 .deck-select {
@@ -233,7 +207,7 @@ h2 {
 
 .game-content {
     display: grid;
-    grid-template-columns: 1fr 2fr;
+    grid-template-columns: minmax(280px, 1fr) minmax(320px, 2fr);
     gap: 20px;
 }
 
@@ -290,69 +264,6 @@ h2 {
     flex: 1;
 }
 
-/* Players Area */
-.players-area {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 15px;
-}
-
-.player-card {
-    background: white;
-    padding: 16px;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    border: 1px solid #e0e0e0;
-    transition: all 0.2s ease;
-}
-
-.player-card.current {
-    border: 2px solid #1a1a1a;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-}
-
-.player-card.eliminated {
-    opacity: 0.3;
-}
-
-.player-card.passed {
-    opacity: 0.5;
-    border: 1px dashed #999;
-}
-
-.player-name {
-    font-weight: bold;
-    font-size: 1.1rem;
-    color: #333;
-    margin-bottom: 10px;
-}
-
-.player-stats {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 10px;
-}
-
-.lives, .points {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-
-.heart {
-    color: #ef5350;
-    font-size: 1.2rem;
-}
-
-.heart.lost {
-    opacity: 0.2;
-}
-
-.card {
-    color: #ffd700;
-    font-size: 1.2rem;
-}
-
 /* Action Center */
 .action-center {
     background: white;
@@ -360,20 +271,6 @@ h2 {
     border-radius: 8px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     border: 1px solid #e0e0e0;
-    grid-column: 1 / -1;
-}
-
-.current-player-display {
-    text-align: center;
-    font-size: 1.1rem;
-    margin-bottom: 15px;
-    color: #666;
-    font-weight: 500;
-}
-
-#current-player-name {
-    color: #1a1a1a;
-    font-weight: 600;
 }
 
 /* Timers */
@@ -453,34 +350,6 @@ h2 {
     margin-bottom: 15px;
     font-size: 1.1rem;
     color: #333;
-}
-
-.challenge-select {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-bottom: 15px;
-    align-items: center;
-}
-
-.challenge-select label {
-    font-size: 0.95rem;
-    color: #666;
-}
-
-.challenger-select {
-    width: min(100%, 320px);
-    padding: 12px;
-    border: 1px solid #d0d0d0;
-    border-radius: 6px;
-    font-size: 1rem;
-    background: white;
-    cursor: pointer;
-}
-
-.challenger-select:focus {
-    outline: none;
-    border-color: #1a1a1a;
 }
 
 .challenge-area .btn {
@@ -597,83 +466,10 @@ h2 {
     font-size: 1.1rem;
 }
 
-/* Game Over Screen */
-.winner-display {
-    text-align: center;
-    margin: 30px 0;
-    padding: 32px;
-    background: #1a1a1a;
-    border-radius: 8px;
-}
-
-.winner-display h2 {
-    font-size: 1.5rem;
-    color: white;
-    margin-bottom: 10px;
-    font-weight: 600;
-}
-
-.winner-name {
-    font-size: 2rem;
-    font-weight: 600;
-    color: white;
-}
-
-.final-scores {
-    margin-bottom: 30px;
-}
-
-.final-scores h2 {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-#final-scores-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.score-item {
-    display: flex;
-    justify-content: space-between;
-    padding: 16px;
-    background: #fafafa;
-    border-radius: 6px;
-    font-size: 1rem;
-    border: 1px solid #e8e8e8;
-}
-
-.score-item.winner {
-    background: #1a1a1a;
-    color: white;
-    font-weight: 600;
-    border-color: #1a1a1a;
-}
-
-#play-again-btn {
-    width: 100%;
-    padding: 16px;
-    font-size: 1.2rem;
-}
-
 /* Responsive Design */
 @media (max-width: 768px) {
     .game-content {
         grid-template-columns: 1fr;
-    }
-
-    .top10-container {
-        order: 2;
-    }
-
-    .players-area {
-        order: 1;
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    }
-
-    .action-center {
-        order: 3;
     }
 
     .action-buttons {
@@ -702,10 +498,6 @@ h2 {
 }
 
 @media (max-width: 480px) {
-    .players-area {
-        grid-template-columns: 1fr;
-    }
-
     .game-title {
         font-size: 1.5rem;
     }
