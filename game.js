@@ -4,7 +4,6 @@ let gameState = {
     currentRound: 1,
     questions: [],
     revealedItems: [],
-    currentGuess: null,
     gameData: null,
     selectedDeckIndex: 0,
     turnTimerInterval: null,
@@ -55,21 +54,6 @@ function playChallengeSound() {
     ]);
 }
 
-function playCorrectChallengeSound() {
-    playSoundSequence([
-        { frequency: 523, duration: 0.12, type: 'triangle', gain: 0.2 },
-        { frequency: 659, duration: 0.12, type: 'triangle', gain: 0.2 },
-        { frequency: 784, duration: 0.14, type: 'triangle', gain: 0.2 }
-    ]);
-}
-
-function playIncorrectChallengeSound() {
-    playSoundSequence([
-        { frequency: 220, duration: 0.14, type: 'sawtooth', gain: 0.22 },
-        { frequency: 196, duration: 0.16, type: 'sawtooth', gain: 0.22 }
-    ]);
-}
-
 // DOM Elements
 const setupScreen = document.getElementById('setup-screen');
 const gameScreen = document.getElementById('game-screen');
@@ -97,12 +81,10 @@ const submitGuessBtn = document.getElementById('submit-guess-btn');
 const cancelGuessBtn = document.getElementById('cancel-guess-btn');
 const actionButtons = document.getElementById('action-buttons');
 const challengeArea = document.getElementById('challenge-area');
-const currentGuessText = document.getElementById('current-guess');
 const challengeBtn = document.getElementById('challenge-btn');
 const acceptBtn = document.getElementById('accept-btn');
 
 // Reveal modal elements
-const revealedGuess = document.getElementById('revealed-guess');
 const resultText = document.getElementById('result-text');
 const revealList = document.getElementById('reveal-list');
 const roundOutcome = document.getElementById('round-outcome');
@@ -171,7 +153,6 @@ function startNewRound() {
 
     const question = gameState.questions[gameState.currentQuestionIndex];
     gameState.revealedItems = [];
-    gameState.currentGuess = null;
     gameState.currentGuessOptions = shuffleArray([...question.top10]);
 
     currentCategory.textContent = question.category;
@@ -269,15 +250,11 @@ function hideGuessInput() {
 
 // Submit guess
 function submitGuess() {
-    const guess = guessSelect.value.trim();
-
-    if (!guess) {
+    if (!guessSelect.value.trim()) {
         guessError.textContent = 'Selecione um palpite para continuar.';
         guessError.classList.remove('hidden');
         return;
     }
-
-    gameState.currentGuess = guess;
 
     hideGuessInput();
     stopTurnTimer();
@@ -306,8 +283,6 @@ function handlePass() {
 
 // Show challenge area
 function showChallengeArea() {
-    currentGuessText.textContent = gameState.currentGuess;
-
     hideActionButtons();
     challengeArea.classList.remove('hidden');
     startChallengeTimer();
@@ -321,83 +296,37 @@ function hideChallengeArea() {
 
 // Handle challenge
 function handleChallenge() {
-    const question = gameState.questions[gameState.currentQuestionIndex];
-    const normalizedGuess = normalizeString(gameState.currentGuess);
-    const isCorrect = question.top10.some(item => normalizeString(item) === normalizedGuess);
-
     playChallengeSound();
     stopChallengeTimer();
     hideChallengeArea();
-    showRevealModal(isCorrect, true);
+    showRevealModal();
 }
 
 // Handle accept (no challenge)
 function handleAccept() {
-    const question = gameState.questions[gameState.currentQuestionIndex];
-    const normalizedGuess = normalizeString(gameState.currentGuess);
-    const isCorrect = question.top10.some(item => normalizeString(item) === normalizedGuess);
-
     stopChallengeTimer();
     hideChallengeArea();
-
-    if (isCorrect) {
-        // Reveal the item
-        const index = question.top10.findIndex(item => normalizeString(item) === normalizedGuess);
-        if (index !== -1 && !gameState.revealedItems.includes(index)) {
-            gameState.revealedItems.push(index);
-            renderTop10List();
-        }
-    }
-
-    checkRoundEnd();
+    endRound();
 }
 
 // Show reveal modal
-function showRevealModal(isCorrect, wasChallenged) {
+function showRevealModal() {
     const question = gameState.questions[gameState.currentQuestionIndex];
 
-    revealedGuess.textContent = gameState.currentGuess;
-
-    if (isCorrect) {
-        resultText.textContent = 'É TOP! ✅';
-        resultText.className = 'result-text correct';
-    } else {
-        resultText.textContent = 'NÃO É TOP! ❌';
-        resultText.className = 'result-text incorrect';
-    }
-
-    if (wasChallenged) {
-        if (isCorrect) {
-            playCorrectChallengeSound();
-        } else {
-            playIncorrectChallengeSound();
-        }
-    }
+    resultText.textContent = 'Lista revelada';
+    resultText.className = 'result-text';
 
     // Show full top 10 list
     revealList.innerHTML = '';
-    const normalizedGuess = normalizeString(gameState.currentGuess);
     question.top10.forEach((item, index) => {
         const li = document.createElement('li');
         li.textContent = `${index + 1}. ${item}`;
-
-        // Highlight the guessed item if it matches
-        if (normalizeString(item) === normalizedGuess) {
-            li.style.fontWeight = 'bold';
-            li.style.background = '#ffd700';
-            li.style.padding = '5px';
-            li.style.borderRadius = '3px';
-        }
 
         revealList.appendChild(li);
     });
 
     // Determine outcome
     let outcomeHTML = '';
-
-    if (wasChallenged) {
-        outcomeHTML = 'Registre vidas e pontos offline conforme o resultado.';
-    }
 
     if (outcomeHTML) {
         roundOutcome.innerHTML = outcomeHTML;
@@ -407,46 +336,14 @@ function showRevealModal(isCorrect, wasChallenged) {
         roundOutcome.classList.add('hidden');
     }
 
-    // Store outcome data for processing
-    revealModal.dataset.isCorrect = isCorrect;
-    revealModal.dataset.wasChallenged = wasChallenged;
-
     revealModal.classList.add('active');
 }
 
 // Continue game after reveal
 function continueGame() {
-    const isCorrect = revealModal.dataset.isCorrect === 'true';
-    const wasChallenged = revealModal.dataset.wasChallenged === 'true';
-    const question = gameState.questions[gameState.currentQuestionIndex];
-
     revealModal.classList.remove('active');
 
-    if (wasChallenged) {
-        if (isCorrect) {
-            // Reveal the correct item
-            const index = question.top10.findIndex(item =>
-                normalizeString(item) === normalizeString(gameState.currentGuess)
-            );
-            if (index !== -1 && !gameState.revealedItems.includes(index)) {
-                gameState.revealedItems.push(index);
-            }
-        }
-    }
-
-    renderTop10List();
-    checkRoundEnd();
-}
-
-// Check if round should end
-function checkRoundEnd() {
-    const question = gameState.questions[gameState.currentQuestionIndex];
-    if (gameState.revealedItems.length >= question.top10.length) {
-        endRound();
-        return;
-    }
-
-    showActionButtons();
+    endRound();
 }
 
 // End round
@@ -474,13 +371,6 @@ function hideActionButtons() {
 function switchScreen(from, to) {
     from.classList.remove('active');
     to.classList.add('active');
-}
-
-function normalizeString(str) {
-    return str.toLowerCase()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .trim();
 }
 
 function shuffleArray(array) {
