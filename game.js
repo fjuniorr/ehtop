@@ -91,7 +91,7 @@ const challengeTimerValue = document.getElementById('challenge-timer-value');
 const guessBtn = document.getElementById('guess-btn');
 const passBtn = document.getElementById('pass-btn');
 const guessInputArea = document.getElementById('guess-input-area');
-const guessInput = document.getElementById('guess-input');
+const guessSelect = document.getElementById('guess-select');
 const guessError = document.getElementById('guess-error');
 const submitGuessBtn = document.getElementById('submit-guess-btn');
 const cancelGuessBtn = document.getElementById('cancel-guess-btn');
@@ -172,6 +172,7 @@ function startNewRound() {
     const question = gameState.questions[gameState.currentQuestionIndex];
     gameState.revealedItems = [];
     gameState.currentGuess = null;
+    gameState.currentGuessOptions = shuffleArray([...question.top10]);
 
     currentCategory.textContent = question.category;
     roundNumber.textContent = `Rodada ${gameState.currentRound}`;
@@ -252,10 +253,9 @@ function stopChallengeTimer() {
 function showGuessInput() {
     hideActionButtons();
     guessInputArea.classList.remove('hidden');
-    guessInput.value = '';
+    populateGuessOptions();
     guessError.classList.add('hidden');
     guessError.textContent = '';
-    guessInput.focus();
     // Timer continues while typing
 }
 
@@ -269,9 +269,11 @@ function hideGuessInput() {
 
 // Submit guess
 function submitGuess() {
-    const guess = guessInput.value.trim();
+    const guess = guessSelect.value.trim();
 
     if (!guess) {
+        guessError.textContent = 'Selecione um palpite para continuar.';
+        guessError.classList.remove('hidden');
         return;
     }
 
@@ -280,6 +282,20 @@ function submitGuess() {
     hideGuessInput();
     stopTurnTimer();
     showChallengeArea();
+}
+
+function populateGuessOptions() {
+    const question = gameState.questions[gameState.currentQuestionIndex];
+    const options = gameState.currentGuessOptions || shuffleArray([...question.top10]);
+    gameState.currentGuessOptions = options;
+
+    guessSelect.innerHTML = '<option value="">Selecione um palpite...</option>';
+    options.forEach(item => {
+        const option = document.createElement('option');
+        option.value = item;
+        option.textContent = item;
+        guessSelect.appendChild(option);
+    });
 }
 
 // Handle pass

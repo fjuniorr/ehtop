@@ -310,20 +310,22 @@ h2 {
 
 .guess-input-area {
     display: flex;
+    flex-direction: column;
     gap: 10px;
     margin-bottom: 15px;
 }
 
-#guess-input {
-    flex: 1;
+.guess-select {
+    width: 100%;
     padding: 12px;
     border: 1px solid #d0d0d0;
     border-radius: 6px;
     font-size: 0.95rem;
     background: white;
+    cursor: pointer;
 }
 
-#guess-input:focus {
+.guess-select:focus {
     outline: none;
     border-color: #1a1a1a;
 }
