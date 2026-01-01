@@ -18,6 +18,63 @@ let gameState = {
     challengeTimerSeconds: 0
 };
 
+// Audio helpers
+let audioContext = null;
+
+function getAudioContext() {
+    if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    return audioContext;
+}
+
+function playSoundSequence(sequence) {
+    const context = getAudioContext();
+    if (context.state === 'suspended') {
+        context.resume();
+    }
+
+    let startTime = context.currentTime;
+    sequence.forEach(({ frequency, duration, type = 'sine', gain = 0.2, gap = 0.02 }) => {
+        const oscillator = context.createOscillator();
+        const gainNode = context.createGain();
+
+        oscillator.type = type;
+        oscillator.frequency.value = frequency;
+        gainNode.gain.value = gain;
+
+        oscillator.connect(gainNode);
+        gainNode.connect(context.destination);
+
+        oscillator.start(startTime);
+        oscillator.stop(startTime + duration);
+
+        startTime += duration + gap;
+    });
+}
+
+function playChallengeSound() {
+    playSoundSequence([
+        { frequency: 392, duration: 0.08, type: 'square', gain: 0.18 },
+        { frequency: 523, duration: 0.1, type: 'square', gain: 0.18 }
+    ]);
+}
+
+function playCorrectChallengeSound() {
+    playSoundSequence([
+        { frequency: 523, duration: 0.12, type: 'triangle', gain: 0.2 },
+        { frequency: 659, duration: 0.12, type: 'triangle', gain: 0.2 },
+        { frequency: 784, duration: 0.14, type: 'triangle', gain: 0.2 }
+    ]);
+}
+
+function playIncorrectChallengeSound() {
+    playSoundSequence([
+        { frequency: 220, duration: 0.14, type: 'sawtooth', gain: 0.22 },
+        { frequency: 196, duration: 0.16, type: 'sawtooth', gain: 0.22 }
+    ]);
+}
+
 // DOM Elements
 const setupScreen = document.getElementById('setup-screen');
 const gameScreen = document.getElementById('game-screen');
@@ -428,6 +485,7 @@ function handleChallenge() {
     const normalizedGuess = normalizeString(gameState.currentGuess);
     const isCorrect = question.top10.some(item => normalizeString(item) === normalizedGuess);
 
+    playChallengeSound();
     stopChallengeTimer();
     hideChallengeArea();
     showRevealModal(isCorrect, true);
@@ -470,6 +528,14 @@ function showRevealModal(isCorrect, wasChallenged) {
     } else {
         resultText.textContent = 'NÃO É TOP! ❌';
         resultText.className = 'result-text incorrect';
+    }
+
+    if (wasChallenged) {
+        if (isCorrect) {
+            playCorrectChallengeSound();
+        } else {
+            playIncorrectChallengeSound();
+        }
     }
 
     // Show full top 10 list
