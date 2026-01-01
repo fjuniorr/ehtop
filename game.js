@@ -127,6 +127,7 @@ const acceptBtn = document.getElementById('accept-btn');
 // Reveal modal elements
 const revealedGuess = document.getElementById('revealed-guess');
 const revealedChallenger = document.getElementById('revealed-challenger');
+const resultText = document.getElementById('result-text');
 const revealList = document.getElementById('reveal-list');
 const roundOutcome = document.getElementById('round-outcome');
 const continueBtn = document.getElementById('continue-btn');
@@ -542,6 +543,8 @@ function showRevealModal(isCorrect, wasChallenged) {
     revealedChallenger.textContent = gameState.currentChallenger
         ? gameState.currentChallenger.name
         : 'N/A';
+    resultText.textContent = isCorrect ? 'É TOP!' : 'NÃO É TOP!';
+    resultText.className = `result-text ${isCorrect ? 'correct' : 'incorrect'}`;
 
     revealList.innerHTML = '';
     if (wasChallenged) {
@@ -681,6 +684,7 @@ function moveToNextPlayer() {
 
     gameState.currentPlayerIndex = nextIndex;
     updateCurrentPlayerDisplay();
+    renderPlayers();
 }
 
 function offerNextActivePlayer() {
