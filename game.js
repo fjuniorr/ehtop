@@ -31,6 +31,7 @@ const deckSelect = document.getElementById('deck-select');
 const currentCategory = document.getElementById('current-category');
 const roundNumber = document.getElementById('round-number');
 const top10List = document.getElementById('top10-list');
+const guessesList = document.getElementById('guesses-list');
 const playersArea = document.getElementById('players-area');
 const currentPlayerDisplay = document.getElementById('current-player-name');
 const guessBtn = document.getElementById('guess-btn');
@@ -172,6 +173,7 @@ function startNewRound() {
 
     renderTop10List();
     renderPlayers();
+    renderGuesses();
     updateCurrentPlayerDisplay();
     hideGuessInput();
     hideChallengeArea();
@@ -243,6 +245,31 @@ function renderPlayers() {
         `;
 
         playersArea.appendChild(playerCard);
+    });
+}
+
+// Render guesses history
+function renderGuesses() {
+    guessesList.innerHTML = '';
+
+    if (gameState.guesses.length === 0) {
+        guessesList.innerHTML = '<p class="no-guesses">Nenhum palpite ainda</p>';
+        return;
+    }
+
+    gameState.guesses.forEach(guess => {
+        const guessItem = document.createElement('div');
+        guessItem.className = `guess-item ${guess.isCorrect ? 'correct' : 'incorrect'}`;
+
+        guessItem.innerHTML = `
+            <span class="guess-player">${guess.playerName}:</span>
+            <span class="guess-text">${guess.guess}</span>
+            <span class="guess-status ${guess.isCorrect ? 'correct' : 'incorrect'}">
+                ${guess.isCorrect ? '✓ TOP' : '? Indefinido'}
+            </span>
+        `;
+
+        guessesList.appendChild(guessItem);
     });
 }
 
@@ -352,6 +379,7 @@ function handleAccept() {
 
     // Continue to next player regardless of whether guess was correct or not
     // No penalty when there's no challenge, even if guess was wrong
+    renderGuesses();
     moveToNextPlayer();
     checkRoundEnd();
 }
@@ -372,9 +400,19 @@ function showRevealModal(isCorrect, wasChallenged) {
 
     // Show full top 10 list
     revealList.innerHTML = '';
+    const normalizedGuess = normalizeString(gameState.currentGuess);
     question.top10.forEach((item, index) => {
         const li = document.createElement('li');
         li.textContent = `${index + 1}. ${item}`;
+
+        // Highlight the guessed item if it matches
+        if (normalizeString(item) === normalizedGuess) {
+            li.style.fontWeight = 'bold';
+            li.style.background = '#ffd700';
+            li.style.padding = '5px';
+            li.style.borderRadius = '3px';
+        }
+
         revealList.appendChild(li);
     });
 
@@ -465,6 +503,7 @@ function continueGame() {
 
     renderTop10List();
     renderPlayers();
+    renderGuesses();
     moveToNextPlayer();
     checkRoundEnd();
 }

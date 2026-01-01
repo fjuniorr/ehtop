@@ -263,6 +263,78 @@ h2 {
     flex: 1;
 }
 
+/* Guesses History */
+.guesses-history {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 2px solid #e0e0e0;
+}
+
+.guesses-history h4 {
+    text-align: center;
+    color: #764ba2;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+.guesses-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.guess-item {
+    padding: 8px 12px;
+    background: #f5f5f5;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.guess-item.correct {
+    background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+    border-left: 3px solid #66bb6a;
+}
+
+.guess-item.incorrect {
+    background: #fafafa;
+}
+
+.guess-player {
+    font-weight: bold;
+    color: #667eea;
+}
+
+.guess-text {
+    flex: 1;
+    color: #333;
+}
+
+.guess-status {
+    font-size: 0.85rem;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.guess-status.correct {
+    background: #66bb6a;
+    color: white;
+}
+
+.guess-status.incorrect {
+    background: #e0e0e0;
+    color: #666;
+}
+
+.no-guesses {
+    text-align: center;
+    color: #999;
+    font-style: italic;
+    padding: 10px;
+}
+
 /* Players Area */
 .players-area {
     display: grid;
