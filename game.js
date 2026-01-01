@@ -8,8 +8,8 @@ let gameState = {
     revealedItems: [],
     currentGuess: null,
     currentGuesser: null,
+    currentChallenger: null,
     playersInRound: [],
-    guesses: [], // Track all guesses in the round: { playerId, playerName, guess, isCorrect }
     gameData: null,
     selectedDeckIndex: 0,
     turnTimerInterval: null,
@@ -92,7 +92,6 @@ const deckSelect = document.getElementById('deck-select');
 const currentCategory = document.getElementById('current-category');
 const roundNumber = document.getElementById('round-number');
 const top10List = document.getElementById('top10-list');
-const guessesList = document.getElementById('guesses-list');
 const playersArea = document.getElementById('players-area');
 const currentPlayerDisplay = document.getElementById('current-player-name');
 const turnTimerElement = document.getElementById('turn-timer');
@@ -110,6 +109,8 @@ const actionButtons = document.getElementById('action-buttons');
 const challengeArea = document.getElementById('challenge-area');
 const guesserName = document.getElementById('guesser-name');
 const currentGuessText = document.getElementById('current-guess');
+const challengerSelect = document.getElementById('challenger-select');
+const challengerError = document.getElementById('challenger-error');
 const challengeBtn = document.getElementById('challenge-btn');
 const acceptBtn = document.getElementById('accept-btn');
 
@@ -166,6 +167,12 @@ function setupEventListeners() {
     acceptBtn.addEventListener('click', handleAccept);
     continueBtn.addEventListener('click', continueGame);
     playAgainBtn.addEventListener('click', resetGame);
+    challengerSelect.addEventListener('change', () => {
+        if (challengerSelect.value) {
+            challengerError.classList.add('hidden');
+            challengerError.textContent = '';
+        }
+    });
 }
 
 // Add player input field
@@ -232,7 +239,7 @@ function startNewRound() {
     gameState.revealedItems = [];
     gameState.currentGuess = null;
     gameState.currentGuesser = null;
-    gameState.guesses = []; // Clear guesses for new round
+    gameState.currentChallenger = null;
     gameState.playersInRound = gameState.players
         .filter(p => !p.eliminated)
         .map(p => ({ ...p, passed: false }));
@@ -246,7 +253,6 @@ function startNewRound() {
 
     renderTop10List();
     renderPlayers();
-    renderGuesses();
     updateCurrentPlayerDisplay();
     hideGuessInput();
     hideChallengeArea();
@@ -318,28 +324,6 @@ function renderPlayers() {
         `;
 
         playersArea.appendChild(playerCard);
-    });
-}
-
-// Render guesses history
-function renderGuesses() {
-    guessesList.innerHTML = '';
-
-    if (gameState.guesses.length === 0) {
-        guessesList.innerHTML = '<p class="no-guesses">Nenhum palpite ainda</p>';
-        return;
-    }
-
-    gameState.guesses.forEach(guess => {
-        const guessItem = document.createElement('div');
-        guessItem.className = 'guess-item';
-
-        guessItem.innerHTML = `
-            <span class="guess-player">${guess.playerName}:</span>
-            <span class="guess-text">${guess.guess}</span>
-        `;
-
-        guessesList.appendChild(guessItem);
     });
 }
 
@@ -419,32 +403,10 @@ function submitGuess() {
         return;
     }
 
-    const normalizedGuess = normalizeString(guess);
-
-    // Check if this guess has already been made
-    const isDuplicate = gameState.guesses.some(g => normalizeString(g.guess) === normalizedGuess);
-
-    if (isDuplicate) {
-        guessError.textContent = 'Este palpite já foi dado! Escolha outro.';
-        guessError.classList.remove('hidden');
-        return;
-    }
-
     const currentPlayer = gameState.players[gameState.currentPlayerIndex];
     gameState.currentGuess = guess;
     gameState.currentGuesser = currentPlayer;
-
-    // Check if guess is correct
-    const question = gameState.questions[gameState.currentQuestionIndex];
-    const isCorrect = question.top10.some(item => normalizeString(item) === normalizedGuess);
-
-    // Store guess with player info
-    gameState.guesses.push({
-        playerId: currentPlayer.id,
-        playerName: currentPlayer.name,
-        guess: guess,
-        isCorrect: isCorrect
-    });
+    gameState.currentChallenger = null;
 
     hideGuessInput();
     stopTurnTimer();
@@ -470,6 +432,8 @@ function handlePass() {
 function showChallengeArea() {
     guesserName.textContent = gameState.currentGuesser.name;
     currentGuessText.textContent = gameState.currentGuess;
+    gameState.currentChallenger = null;
+    populateChallengerSelect();
 
     hideActionButtons();
     challengeArea.classList.remove('hidden');
@@ -479,11 +443,54 @@ function showChallengeArea() {
 // Hide challenge area
 function hideChallengeArea() {
     challengeArea.classList.add('hidden');
+    challengerError.classList.add('hidden');
+    challengerError.textContent = '';
     stopChallengeTimer();
+}
+
+function populateChallengerSelect() {
+    const availableChallengers = gameState.players.filter(
+        player => !player.eliminated && player.id !== gameState.currentGuesser.id
+    );
+
+    challengerSelect.innerHTML = '';
+    challengerSelect.disabled = availableChallengers.length === 0;
+    challengeBtn.disabled = availableChallengers.length === 0;
+    challengerError.classList.add('hidden');
+    challengerError.textContent = '';
+
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = availableChallengers.length
+        ? 'Selecione o desafiante'
+        : 'Nenhum desafiante disponível';
+    placeholder.disabled = true;
+    placeholder.selected = true;
+    challengerSelect.appendChild(placeholder);
+
+    availableChallengers.forEach(player => {
+        const option = document.createElement('option');
+        option.value = player.id;
+        option.textContent = player.name;
+        challengerSelect.appendChild(option);
+    });
 }
 
 // Handle challenge
 function handleChallenge() {
+    if (challengerSelect.disabled) {
+        return;
+    }
+
+    const challengerId = parseInt(challengerSelect.value, 10);
+    if (Number.isNaN(challengerId)) {
+        challengerError.textContent = 'Selecione quem desafiou antes de continuar.';
+        challengerError.classList.remove('hidden');
+        return;
+    }
+
+    gameState.currentChallenger = gameState.players.find(player => player.id === challengerId) || null;
+
     const question = gameState.questions[gameState.currentQuestionIndex];
     const normalizedGuess = normalizeString(gameState.currentGuess);
     const isCorrect = question.top10.some(item => normalizeString(item) === normalizedGuess);
@@ -514,7 +521,6 @@ function handleAccept() {
 
     // Continue to next player regardless of whether guess was correct or not
     // No penalty when there's no challenge, even if guess was wrong
-    renderGuesses();
     moveToNextPlayer();
     checkRoundEnd();
 }
@@ -563,12 +569,15 @@ function showRevealModal(isCorrect, wasChallenged) {
     let outcomeHTML = '';
 
     if (wasChallenged) {
+        const challengerName = gameState.currentChallenger
+            ? gameState.currentChallenger.name
+            : 'O desafiante';
         if (isCorrect) {
             // Guess was correct, challenger loses life
-            outcomeHTML = `<strong>${gameState.currentGuesser.name}</strong> estava certo! O desafiante perde 1 vida.`;
+            outcomeHTML = `<strong>${gameState.currentGuesser.name}</strong> estava certo! ${challengerName} perde 1 vida.`;
         } else {
             // Guess was incorrect, guesser loses life, challenger wins card
-            outcomeHTML = `<strong>${gameState.currentGuesser.name}</strong> estava errado! Perde 1 vida e o desafiante ganha 1 carta!`;
+            outcomeHTML = `<strong>${gameState.currentGuesser.name}</strong> estava errado! Perde 1 vida e ${challengerName} ganha 1 carta!`;
         }
     }
     // Note: No outcome message when not challenged - this should not happen now
@@ -593,41 +602,42 @@ function continueGame() {
 
     // Only process challenge outcomes (since handleAccept handles non-challenge cases)
     if (wasChallenged) {
+        const challenger = gameState.currentChallenger;
+        if (!challenger) {
+            renderTop10List();
+            renderPlayers();
+            moveToNextPlayer();
+            checkRoundEnd();
+            return;
+        }
         if (isCorrect) {
             // Challenger loses life - we need to ask who challenged
-            // For simplicity, we'll assume the next active player challenged
-            const challengerIndex = getNextActivePlayerIndex();
-            if (challengerIndex !== -1) {
-                loseLife(gameState.players[challengerIndex]);
+            loseLife(challenger);
 
-                // Reveal the correct item
-                const index = question.top10.findIndex(item =>
-                    normalizeString(item) === normalizeString(gameState.currentGuess)
-                );
-                if (index !== -1 && !gameState.revealedItems.includes(index)) {
-                    gameState.revealedItems.push(index);
-                }
+            // Reveal the correct item
+            const index = question.top10.findIndex(item =>
+                normalizeString(item) === normalizeString(gameState.currentGuess)
+            );
+            if (index !== -1 && !gameState.revealedItems.includes(index)) {
+                gameState.revealedItems.push(index);
+            }
 
-                // Remove challenger from round
-                const challengerInRound = gameState.playersInRound.find(
-                    p => p.id === gameState.players[challengerIndex].id
-                );
-                if (challengerInRound) {
-                    challengerInRound.passed = true;
-                }
+            // Remove challenger from round
+            const challengerInRound = gameState.playersInRound.find(
+                p => p.id === challenger.id
+            );
+            if (challengerInRound) {
+                challengerInRound.passed = true;
             }
         } else {
             // Guesser loses life
             loseLife(gameState.currentGuesser);
 
-            // Challenger wins card - assume next active player
-            const challengerIndex = getNextActivePlayerIndex();
-            if (challengerIndex !== -1) {
-                gameState.players[challengerIndex].cards++;
+            // Challenger wins card
+            challenger.cards++;
 
-                if (checkWinCondition(gameState.players[challengerIndex])) {
-                    return;
-                }
+            if (checkWinCondition(challenger)) {
+                return;
             }
 
             // Remove guesser from round
@@ -639,14 +649,13 @@ function continueGame() {
             }
 
             // End round, challenger won
-            endRound(challengerIndex);
+            endRound(challenger.id);
             return;
         }
     }
 
     renderTop10List();
     renderPlayers();
-    renderGuesses();
     moveToNextPlayer();
     checkRoundEnd();
 }
@@ -687,22 +696,6 @@ function moveToNextPlayer() {
 
     gameState.currentPlayerIndex = nextIndex;
     updateCurrentPlayerDisplay();
-}
-
-// Get next active player index (for challenger)
-function getNextActivePlayerIndex() {
-    let nextIndex = (gameState.currentPlayerIndex + 1) % gameState.players.length;
-
-    while (gameState.players[nextIndex].eliminated &&
-           nextIndex !== gameState.currentPlayerIndex) {
-        nextIndex = (nextIndex + 1) % gameState.players.length;
-    }
-
-    if (gameState.players[nextIndex].eliminated) {
-        return -1;
-    }
-
-    return nextIndex;
 }
 
 // Check if round should end
@@ -808,8 +801,8 @@ function resetGame() {
         revealedItems: [],
         currentGuess: null,
         currentGuesser: null,
+        currentChallenger: null,
         playersInRound: [],
-        guesses: [],
         gameData: gameState.gameData,
         selectedDeckIndex: 0,
         turnTimerInterval: null,

@@ -290,57 +290,6 @@ h2 {
     flex: 1;
 }
 
-/* Guesses History */
-.guesses-history {
-    margin-top: 20px;
-    padding-top: 20px;
-    border-top: 2px solid #e0e0e0;
-}
-
-.guesses-history h4 {
-    text-align: center;
-    color: #1a1a1a;
-    margin-bottom: 15px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.guesses-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.guess-item {
-    padding: 10px 12px;
-    background: #fafafa;
-    border-radius: 4px;
-    font-size: 0.85rem;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    border: 1px solid #e8e8e8;
-}
-
-.guess-player {
-    font-weight: 600;
-    color: #1a1a1a;
-}
-
-.guess-text {
-    flex: 1;
-    color: #666;
-}
-
-.no-guesses {
-    text-align: center;
-    color: #999;
-    font-style: italic;
-    padding: 10px;
-}
-
 /* Players Area */
 .players-area {
     display: grid;
@@ -504,6 +453,34 @@ h2 {
     margin-bottom: 15px;
     font-size: 1.1rem;
     color: #333;
+}
+
+.challenge-select {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 15px;
+    align-items: center;
+}
+
+.challenge-select label {
+    font-size: 0.95rem;
+    color: #666;
+}
+
+.challenger-select {
+    width: min(100%, 320px);
+    padding: 12px;
+    border: 1px solid #d0d0d0;
+    border-radius: 6px;
+    font-size: 1rem;
+    background: white;
+    cursor: pointer;
+}
+
+.challenger-select:focus {
+    outline: none;
+    border-color: #1a1a1a;
 }
 
 .challenge-area .btn {
