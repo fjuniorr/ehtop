@@ -227,8 +227,17 @@ h2 {
 }
 
 .round-info {
-    color: #666;
-    font-weight: bold;
+    display: inline-block;
+    padding: 8px 18px;
+    border-radius: 999px;
+    background: #1a1a1a;
+    color: #fff;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+#round-number {
+    font-size: 1.1rem;
 }
 
 .game-content {
@@ -288,6 +297,37 @@ h2 {
 
 .item-text {
     flex: 1;
+}
+
+/* Guess History */
+.guess-history {
+    margin-top: 20px;
+    border-top: 1px solid #e0e0e0;
+    padding-top: 16px;
+}
+
+.guess-history h3 {
+    text-align: center;
+    color: #1a1a1a;
+    margin-bottom: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.guess-history-list {
+    list-style: none;
+    padding: 0;
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+.guess-history-list li {
+    padding: 8px 10px;
+    margin-bottom: 6px;
+    background: #fafafa;
+    border-radius: 6px;
+    border: 1px solid #e8e8e8;
+    font-size: 0.9rem;
 }
 
 /* Players Area */
@@ -364,16 +404,31 @@ h2 {
 }
 
 .current-player-display {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
     text-align: center;
     font-size: 1.1rem;
-    margin-bottom: 15px;
+    margin-bottom: 18px;
     color: #666;
-    font-weight: 500;
+    font-weight: 600;
 }
 
-#current-player-name {
+.current-player-label {
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.85rem;
+}
+
+.current-player-name {
     color: #1a1a1a;
-    font-weight: 600;
+    font-weight: 700;
+    font-size: 1.35rem;
+    background: #ffd54f;
+    padding: 6px 12px;
+    border-radius: 999px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 /* Timers */
@@ -537,24 +592,6 @@ h2 {
 .guess-text {
     font-size: 1.2rem;
     margin-bottom: 10px;
-}
-
-.result-text {
-    font-size: 1.5rem;
-    font-weight: 600;
-    padding: 16px;
-    border-radius: 6px;
-    margin: 15px 0;
-}
-
-.result-text.correct {
-    background: #28a745;
-    color: white;
-}
-
-.result-text.incorrect {
-    background: #dc3545;
-    color: white;
 }
 
 .top10-reveal h3 {

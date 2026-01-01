@@ -10,6 +10,8 @@ let gameState = {
     currentGuesser: null,
     currentChallenger: null,
     playersInRound: [],
+    lastGuessPlayerId: null,
+    guessHistory: [],
     gameData: null,
     selectedDeckIndex: 0,
     turnTimerInterval: null,
@@ -75,6 +77,14 @@ function playIncorrectChallengeSound() {
     ]);
 }
 
+function playRoundWinSound() {
+    playSoundSequence([
+        { frequency: 440, duration: 0.1, type: 'triangle', gain: 0.2 },
+        { frequency: 554, duration: 0.12, type: 'triangle', gain: 0.2 },
+        { frequency: 659, duration: 0.14, type: 'triangle', gain: 0.2 }
+    ]);
+}
+
 // DOM Elements
 const setupScreen = document.getElementById('setup-screen');
 const gameScreen = document.getElementById('game-screen');
@@ -116,7 +126,7 @@ const acceptBtn = document.getElementById('accept-btn');
 
 // Reveal modal elements
 const revealedGuess = document.getElementById('revealed-guess');
-const resultText = document.getElementById('result-text');
+const revealedChallenger = document.getElementById('revealed-challenger');
 const revealList = document.getElementById('reveal-list');
 const roundOutcome = document.getElementById('round-outcome');
 const continueBtn = document.getElementById('continue-btn');
@@ -125,6 +135,7 @@ const continueBtn = document.getElementById('continue-btn');
 const winnerDisplay = document.getElementById('winner-display');
 const finalScoresList = document.getElementById('final-scores-list');
 const playAgainBtn = document.getElementById('play-again-btn');
+const guessHistoryList = document.getElementById('guess-history-list');
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
@@ -222,9 +233,12 @@ function startGame() {
     gameState.currentPlayerIndex = 0;
     gameState.currentQuestionIndex = 0;
     gameState.currentRound = 1;
+    gameState.lastGuessPlayerId = null;
+    gameState.guessHistory = [];
 
     switchScreen(setupScreen, gameScreen);
     startNewRound();
+    renderGuessHistory();
 }
 
 // Start new round
@@ -240,9 +254,13 @@ function startNewRound() {
     gameState.currentGuess = null;
     gameState.currentGuesser = null;
     gameState.currentChallenger = null;
+    gameState.lastGuessPlayerId = null;
+    gameState.guessHistory = [];
     gameState.playersInRound = gameState.players
         .filter(p => !p.eliminated)
         .map(p => ({ ...p, passed: false }));
+
+    offerNextActivePlayer();
 
     currentCategory.textContent = question.category;
     roundNumber.textContent = `Rodada ${gameState.currentRound}`;
@@ -257,6 +275,7 @@ function startNewRound() {
     hideGuessInput();
     hideChallengeArea();
     showActionButtons();
+    renderGuessHistory();
 }
 
 // Render Top 10 list
@@ -265,16 +284,9 @@ function renderTop10List() {
     items.forEach((item, index) => {
         const textSpan = item.querySelector('.item-text');
 
-        if (gameState.revealedItems.includes(index)) {
-            const question = gameState.questions[gameState.currentQuestionIndex];
-            textSpan.textContent = question.top10[index];
-            item.classList.add('revealed');
-            item.classList.remove('hidden');
-        } else {
-            textSpan.textContent = '???';
-            item.classList.remove('revealed');
-            item.classList.add('hidden');
-        }
+        textSpan.textContent = '???';
+        item.classList.remove('revealed');
+        item.classList.add('hidden');
     });
 }
 
@@ -407,6 +419,13 @@ function submitGuess() {
     gameState.currentGuess = guess;
     gameState.currentGuesser = currentPlayer;
     gameState.currentChallenger = null;
+    gameState.lastGuessPlayerId = currentPlayer.id;
+    gameState.guessHistory.push({
+        round: gameState.currentRound,
+        playerName: currentPlayer.name,
+        guess: guess
+    });
+    renderGuessHistory();
 
     hideGuessInput();
     stopTurnTimer();
@@ -449,9 +468,10 @@ function hideChallengeArea() {
 }
 
 function populateChallengerSelect() {
-    const availableChallengers = gameState.players.filter(
-        player => !player.eliminated && player.id !== gameState.currentGuesser.id
-    );
+    const availableChallengers = gameState.playersInRound
+        .filter(player => !player.passed && player.id !== gameState.currentGuesser.id)
+        .map(player => gameState.players.find(p => p.id === player.id))
+        .filter(player => player && !player.eliminated);
 
     challengerSelect.innerHTML = '';
     challengerSelect.disabled = availableChallengers.length === 0;
@@ -490,6 +510,11 @@ function handleChallenge() {
     }
 
     gameState.currentChallenger = gameState.players.find(player => player.id === challengerId) || null;
+    if (!gameState.currentChallenger) {
+        challengerError.textContent = 'Desafiante inválido para esta rodada.';
+        challengerError.classList.remove('hidden');
+        return;
+    }
 
     const question = gameState.questions[gameState.currentQuestionIndex];
     const normalizedGuess = normalizeString(gameState.currentGuess);
@@ -503,24 +528,8 @@ function handleChallenge() {
 
 // Handle accept (no challenge)
 function handleAccept() {
-    const question = gameState.questions[gameState.currentQuestionIndex];
-    const normalizedGuess = normalizeString(gameState.currentGuess);
-    const isCorrect = question.top10.some(item => normalizeString(item) === normalizedGuess);
-
     stopChallengeTimer();
     hideChallengeArea();
-
-    if (isCorrect) {
-        // Reveal the item
-        const index = question.top10.findIndex(item => normalizeString(item) === normalizedGuess);
-        if (index !== -1 && !gameState.revealedItems.includes(index)) {
-            gameState.revealedItems.push(index);
-            renderTop10List();
-        }
-    }
-
-    // Continue to next player regardless of whether guess was correct or not
-    // No penalty when there's no challenge, even if guess was wrong
     moveToNextPlayer();
     checkRoundEnd();
 }
@@ -530,40 +539,18 @@ function showRevealModal(isCorrect, wasChallenged) {
     const question = gameState.questions[gameState.currentQuestionIndex];
 
     revealedGuess.textContent = gameState.currentGuess;
+    revealedChallenger.textContent = gameState.currentChallenger
+        ? gameState.currentChallenger.name
+        : 'N/A';
 
-    if (isCorrect) {
-        resultText.textContent = 'É TOP! ✅';
-        resultText.className = 'result-text correct';
-    } else {
-        resultText.textContent = 'NÃO É TOP! ❌';
-        resultText.className = 'result-text incorrect';
-    }
-
-    if (wasChallenged) {
-        if (isCorrect) {
-            playCorrectChallengeSound();
-        } else {
-            playIncorrectChallengeSound();
-        }
-    }
-
-    // Show full top 10 list
     revealList.innerHTML = '';
-    const normalizedGuess = normalizeString(gameState.currentGuess);
-    question.top10.forEach((item, index) => {
-        const li = document.createElement('li');
-        li.textContent = `${index + 1}. ${item}`;
-
-        // Highlight the guessed item if it matches
-        if (normalizeString(item) === normalizedGuess) {
-            li.style.fontWeight = 'bold';
-            li.style.background = '#ffd700';
-            li.style.padding = '5px';
-            li.style.borderRadius = '3px';
-        }
-
-        revealList.appendChild(li);
-    });
+    if (wasChallenged) {
+        question.top10.forEach((item, index) => {
+            const li = document.createElement('li');
+            li.textContent = `${index + 1}. ${item}`;
+            revealList.appendChild(li);
+        });
+    }
 
     // Determine outcome
     let outcomeHTML = '';
@@ -574,14 +561,12 @@ function showRevealModal(isCorrect, wasChallenged) {
             : 'O desafiante';
         if (isCorrect) {
             // Guess was correct, challenger loses life
-            outcomeHTML = `<strong>${gameState.currentGuesser.name}</strong> estava certo! ${challengerName} perde 1 vida.`;
+            outcomeHTML = `Desafio resolvido. ${challengerName} perde 1 vida.`;
         } else {
             // Guess was incorrect, guesser loses life, challenger wins card
-            outcomeHTML = `<strong>${gameState.currentGuesser.name}</strong> estava errado! Perde 1 vida e ${challengerName} ganha 1 carta!`;
+            outcomeHTML = `Desafio resolvido. ${gameState.currentGuesser.name} perde 1 vida e ${challengerName} ganha 1 carta.`;
         }
     }
-    // Note: No outcome message when not challenged - this should not happen now
-    // as handleAccept() no longer calls showRevealModal for incorrect guesses
 
     roundOutcome.innerHTML = outcomeHTML;
 
@@ -613,14 +598,6 @@ function continueGame() {
         if (isCorrect) {
             // Challenger loses life - we need to ask who challenged
             loseLife(challenger);
-
-            // Reveal the correct item
-            const index = question.top10.findIndex(item =>
-                normalizeString(item) === normalizeString(gameState.currentGuess)
-            );
-            if (index !== -1 && !gameState.revealedItems.includes(index)) {
-                gameState.revealedItems.push(index);
-            }
 
             // Remove challenger from round
             const challengerInRound = gameState.playersInRound.find(
@@ -687,15 +664,67 @@ function checkWinCondition(player) {
 // Move to next player
 function moveToNextPlayer() {
     let nextIndex = (gameState.currentPlayerIndex + 1) % gameState.players.length;
+    let attempts = 0;
 
-    // Skip eliminated players
-    while (gameState.players[nextIndex].eliminated &&
-           nextIndex !== gameState.currentPlayerIndex) {
+    // Skip eliminated or passed players when possible
+    while (attempts < gameState.players.length) {
+        const candidate = gameState.players[nextIndex];
+        const inRound = gameState.playersInRound.find(p => p.id === candidate.id);
+        const isPassed = inRound ? inRound.passed : false;
+
+        if (!candidate.eliminated && !isPassed) {
+            break;
+        }
         nextIndex = (nextIndex + 1) % gameState.players.length;
+        attempts++;
     }
 
     gameState.currentPlayerIndex = nextIndex;
     updateCurrentPlayerDisplay();
+}
+
+function offerNextActivePlayer() {
+    const activePlayers = gameState.players.filter(p => !p.eliminated);
+    if (!activePlayers.length) {
+        return false;
+    }
+
+    let nextIndex = gameState.currentPlayerIndex % gameState.players.length;
+    let attempts = 0;
+    while (attempts < gameState.players.length) {
+        const candidate = gameState.players[nextIndex];
+        if (candidate && !candidate.eliminated) {
+            gameState.currentPlayerIndex = nextIndex;
+            return true;
+        }
+        nextIndex = (nextIndex + 1) % gameState.players.length;
+        attempts++;
+    }
+
+    return false;
+}
+
+function setStarterAfterWinner(winnerId) {
+    if (winnerId === null || winnerId === undefined) {
+        return;
+    }
+
+    const winnerIndex = gameState.players.findIndex(p => p.id === winnerId);
+    if (winnerIndex === -1) {
+        return;
+    }
+
+    let nextIndex = (winnerIndex + 1) % gameState.players.length;
+    let attempts = 0;
+    while (attempts < gameState.players.length) {
+        const candidate = gameState.players[nextIndex];
+        if (candidate && !candidate.eliminated) {
+            gameState.currentPlayerIndex = nextIndex;
+            return;
+        }
+        nextIndex = (nextIndex + 1) % gameState.players.length;
+        attempts++;
+    }
 }
 
 // Check if round should end
@@ -706,6 +735,7 @@ function checkRoundEnd() {
         // Last player wins the card
         const winner = gameState.players.find(p => p.id === activePlayers[0].id);
         winner.cards++;
+        playRoundWinSound();
 
         if (checkWinCondition(winner)) {
             return;
@@ -713,8 +743,19 @@ function checkRoundEnd() {
 
         endRound(winner.id);
     } else if (activePlayers.length === 0) {
-        // All players passed or eliminated, no winner
-        endRound(null);
+        // All players passed or eliminated, last guesser wins if available
+        const lastGuesser = gameState.players.find(p => p.id === gameState.lastGuessPlayerId);
+        if (lastGuesser && !lastGuesser.eliminated) {
+            lastGuesser.cards++;
+
+            if (checkWinCondition(lastGuesser)) {
+                return;
+            }
+
+            endRound(lastGuesser.id);
+        } else {
+            endRound(null);
+        }
     } else {
         // Continue round
         showActionButtons();
@@ -723,6 +764,7 @@ function checkRoundEnd() {
 
 // End round
 function endRound(winnerId) {
+    setStarterAfterWinner(winnerId);
     gameState.currentQuestionIndex++;
     gameState.currentRound++;
 
@@ -742,6 +784,7 @@ function showActionButtons() {
     } else {
         actionButtons.classList.add('hidden');
         moveToNextPlayer();
+        renderPlayers();
         checkRoundEnd();
     }
 }
@@ -803,6 +846,8 @@ function resetGame() {
         currentGuesser: null,
         currentChallenger: null,
         playersInRound: [],
+        lastGuessPlayerId: null,
+        guessHistory: [],
         gameData: gameState.gameData,
         selectedDeckIndex: 0,
         turnTimerInterval: null,
@@ -834,4 +879,21 @@ function shuffleArray(array) {
         [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
     }
     return newArray;
+}
+
+function renderGuessHistory() {
+    guessHistoryList.innerHTML = '';
+
+    if (!gameState.guessHistory.length) {
+        const emptyItem = document.createElement('li');
+        emptyItem.textContent = 'Nenhum palpite ainda.';
+        guessHistoryList.appendChild(emptyItem);
+        return;
+    }
+
+    gameState.guessHistory.forEach(entry => {
+        const li = document.createElement('li');
+        li.textContent = `R${entry.round} · ${entry.playerName}: ${entry.guess}`;
+        guessHistoryList.appendChild(li);
+    });
 }

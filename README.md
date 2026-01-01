@@ -12,20 +12,25 @@ Seja o primeiro jogador a coletar **4 cartas** (pontos de vitória) ou seja o ú
 1. **Início do Jogo**
    - Cada jogador começa com **4 vidas** (❤️) e **0 cartas** (🃏)
    - Os jogadores jogam em turnos no sentido horário
+   - Cada rodada começa com o jogador **à esquerda de quem venceu o último ponto**
 
 2. **Durante seu Turno**
    Você pode escolher:
    - **Adivinhar**: Tente nomear um item que está no Top 10
    - **Passar**: Fique seguro e não arrisque perder vidas (mas não pode ganhar a carta da rodada)
+   - Ao passar, você está **fora da rodada** e **não pode desafiar**
 
 3. **Sistema de Desafio**
    - Quando um jogador faz uma adivinhação, qualquer outro jogador pode **Desafiar**
+   - O resultado do palpite **só é resolvido quando há desafio**
    - Se o palpite estiver **CORRETO**: O desafiante perde 1 vida e é removido da rodada
    - Se o palpite estiver **INCORRETO**: O adivinhador perde 1 vida e o desafiante ganha 1 carta
+   - O Top 10 completo **só é revelado quando há desafio**
 
 4. **Vencendo uma Rodada**
    - Desafie com sucesso um palpite incorreto
    - Seja o último jogador ativo quando todos os outros passaram ou foram eliminados
+   - Se **todos passarem**, o **último jogador que palpitou** ganha a carta da rodada
 
 5. **Eliminação**
    - Perder todas as 4 vidas elimina você do jogo

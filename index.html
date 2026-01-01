@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>É Top? - Jogo de Festa (v0.0.0.9001)</title>
+    <title>É Top? v0.0.0.9001</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -63,6 +63,10 @@
                         <li class="top10-item hidden"><span class="item-number">10</span><span class="item-text">???</span></li>
                     </ol>
 
+                    <div class="guess-history">
+                        <h3>Auditoria de Palpites</h3>
+                        <ul id="guess-history-list" class="guess-history-list"></ul>
+                    </div>
                 </div>
 
                 <!-- Players Area -->
@@ -73,7 +77,8 @@
                 <!-- Action Center -->
                 <div class="action-center">
                     <div id="current-player-display" class="current-player-display">
-                        Vez de: <span id="current-player-name">Jogador</span>
+                        <span class="current-player-label">Vez de:</span>
+                        <span id="current-player-name" class="current-player-name">Jogador</span>
                     </div>
 
                     <!-- Turn Timer -->
@@ -123,10 +128,10 @@
     <!-- Tela 3: Reveal Modal -->
     <div id="reveal-modal" class="modal">
         <div class="modal-content reveal-content">
-            <h2>Revelação!</h2>
+            <h2>Desafio Resolvido</h2>
             <div id="reveal-result" class="reveal-result">
-                <p class="guess-text">Resposta: <strong id="revealed-guess">Item</strong></p>
-                <p class="result-text" id="result-text">É TOP!</p>
+                <p class="guess-text">Palpite: <strong id="revealed-guess">Item</strong></p>
+                <p class="guess-text">Desafiante: <strong id="revealed-challenger">Jogador</strong></p>
             </div>
 
             <div class="top10-reveal">
