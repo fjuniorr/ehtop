@@ -5,70 +5,6 @@
       "questions": [
         {
           "id": 1,
-          "category": "Especialidades de engenharia com mais graduados nos EUA",
-          "top10": [
-            "Mecânica",
-            "Civil",
-            "Elétrica",
-            "Química",
-            "Computação",
-            "Industrial",
-            "Aeroespacial",
-            "Biomédica",
-            "Engenharia Geral",
-            "Ambiental"
-          ]
-        },
-        {
-          "id": 2,
-          "category": "Animais terrestres mais altos",
-          "top10": [
-            "Girafa",
-            "Elefante Africano",
-            "Elefante Asiático",
-            "Rinoceronte Branco",
-            "Hipopótamo",
-            "Avestruz",
-            "Camelo",
-            "Urso Pardo",
-            "Alce",
-            "Bisão"
-          ]
-        },
-        {
-          "id": 3,
-          "category": "Atores de cinema que mais 'mataram' pessoas na tela",
-          "top10": [
-            "Arnold Schwarzenegger",
-            "Dolph Lundgren",
-            "Sylvester Stallone",
-            "Jet Li",
-            "Chow Yun-Fat",
-            "Steven Seagal",
-            "Toshiro Mifune",
-            "Charles Bronson",
-            "Bruce Willis",
-            "James Bond"
-          ]
-        },
-        {
-          "id": 4,
-          "category": "Jogos de tabuleiro mais vendidos da história",
-          "top10": [
-            "Xadrez",
-            "Damas",
-            "Gamão",
-            "Banco Imobiliário",
-            "Scrabble",
-            "Detetive",
-            "Batalha Naval",
-            "Trivial Pursuit",
-            "War",
-            "Jogo da Vida"
-          ]
-        },
-        {
-          "id": 5,
           "category": "Países mais populosos do mundo",
           "top10": [
             "Índia",
@@ -80,7 +16,791 @@
             "Brasil",
             "Bangladesh",
             "Rússia",
-            "Etiópia"
+            "México"
+          ]
+        },
+        {
+          "id": 2,
+          "category": "Montanhas mais altas do mundo",
+          "top10": [
+            "Everest",
+            "K2",
+            "Kangchenjunga",
+            "Lhotse",
+            "Makalu",
+            "Cho Oyu",
+            "Dhaulagiri",
+            "Manaslu",
+            "Nanga Parbat",
+            "Annapurna"
+          ]
+        },
+        {
+          "id": 3,
+          "category": "Rios mais longos do mundo",
+          "top10": [
+            "Nilo",
+            "Amazonas",
+            "Yangtzé",
+            "Mississippi",
+            "Ienissei",
+            "Rio Amarelo",
+            "Ob",
+            "Paraná",
+            "Congo",
+            "Amur"
+          ]
+        },
+        {
+          "id": 4,
+          "category": "Cidades mais populosas do mundo",
+          "top10": [
+            "Tóquio",
+            "Delhi",
+            "Xangai",
+            "Daca",
+            "São Paulo",
+            "Cidade do México",
+            "Cairo",
+            "Pequim",
+            "Mumbai",
+            "Osaka"
+          ]
+        },
+        {
+          "id": 5,
+          "category": "Países maiores em área territorial",
+          "top10": [
+            "Rússia",
+            "Canadá",
+            "Estados Unidos",
+            "China",
+            "Brasil",
+            "Austrália",
+            "Índia",
+            "Argentina",
+            "Cazaquistão",
+            "Argélia"
+          ]
+        },
+        {
+          "id": 6,
+          "category": "Oceanos e mares do mundo por tamanho",
+          "top10": [
+            "Pacífico",
+            "Atlântico",
+            "Índico",
+            "Antártico",
+            "Ártico",
+            "Mar das Filipinas",
+            "Mar de Coral",
+            "Mar da Arábia",
+            "Mar da China",
+            "Mediterrâneo"
+          ]
+        },
+        {
+          "id": 7,
+          "category": "Elementos químicos mais abundantes na crosta terrestre",
+          "top10": [
+            "Oxigênio",
+            "Silício",
+            "Alumínio",
+            "Ferro",
+            "Cálcio",
+            "Sódio",
+            "Potássio",
+            "Magnésio",
+            "Titânio",
+            "Hidrogênio"
+          ]
+        },
+        {
+          "id": 8,
+          "category": "Planetas do sistema solar por tamanho",
+          "top10": [
+            "Júpiter",
+            "Saturno",
+            "Urano",
+            "Netuno",
+            "Terra",
+            "Vênus",
+            "Marte",
+            "Mercúrio",
+            "Plutão",
+            "Éris"
+          ]
+        },
+        {
+          "id": 9,
+          "category": "Animais terrestres mais pesados",
+          "top10": [
+            "Elefante",
+            "Hipopótamo",
+            "Rinoceronte",
+            "Girafa",
+            "Búfalo",
+            "Urso Polar",
+            "Bisão",
+            "Alce",
+            "Camelo",
+            "Crocodilo"
+          ]
+        },
+        {
+          "id": 10,
+          "category": "Animais mais rápidos do mundo",
+          "top10": [
+            "Guepardo",
+            "Antilocapra",
+            "Lebre",
+            "Gnu",
+            "Leão",
+            "Gazela",
+            "Cavalo",
+            "Galgo",
+            "Coiote",
+            "Raposa"
+          ]
+        },
+        {
+          "id": 11,
+          "category": "Aves mais rápidas em voo",
+          "top10": [
+            "Falcão Peregrino",
+            "Águia Real",
+            "Andorinhão",
+            "Pombo",
+            "Ganso",
+            "Pato",
+            "Albatroz",
+            "Gavião",
+            "Gaivota",
+            "Pardal"
+          ]
+        },
+        {
+          "id": 12,
+          "category": "Animais marinhos mais pesados",
+          "top10": [
+            "Baleia",
+            "Tubarão",
+            "Elefante Marinho",
+            "Orca",
+            "Leão Marinho",
+            "Golfinho",
+            "Foca",
+            "Peixe-Boi",
+            "Narval",
+            "Tartaruga Marinha"
+          ]
+        },
+        {
+          "id": 13,
+          "category": "Países que mais ganharam Copas do Mundo",
+          "top10": [
+            "Brasil",
+            "Alemanha",
+            "Itália",
+            "Argentina",
+            "França",
+            "Uruguai",
+            "Inglaterra",
+            "Espanha",
+            "Holanda",
+            "Croácia"
+          ]
+        },
+        {
+          "id": 14,
+          "category": "Países com mais medalhas olímpicas na história",
+          "top10": [
+            "Estados Unidos",
+            "União Soviética",
+            "Alemanha",
+            "Reino Unido",
+            "França",
+            "Itália",
+            "China",
+            "Suécia",
+            "Austrália",
+            "Japão"
+          ]
+        },
+        {
+          "id": 15,
+          "category": "Esportes mais praticados no mundo",
+          "top10": [
+            "Futebol",
+            "Críquete",
+            "Hóquei",
+            "Tênis",
+            "Vôlei",
+            "Basquete",
+            "Tênis de Mesa",
+            "Beisebol",
+            "Rugby",
+            "Golfe"
+          ]
+        },
+        {
+          "id": 16,
+          "category": "Filmes que mais arrecadaram na história",
+          "top10": [
+            "Avatar",
+            "Vingadores Ultimato",
+            "Avatar 2",
+            "Titanic",
+            "Star Wars",
+            "Vingadores Guerra Infinita",
+            "Homem-Aranha",
+            "Jurassic World",
+            "Rei Leão",
+            "Vingadores"
+          ]
+        },
+        {
+          "id": 17,
+          "category": "Idiomas mais falados no mundo",
+          "top10": [
+            "Inglês",
+            "Mandarim",
+            "Hindi",
+            "Espanhol",
+            "Francês",
+            "Árabe",
+            "Bengali",
+            "Russo",
+            "Português",
+            "Indonésio"
+          ]
+        },
+        {
+          "id": 18,
+          "category": "Religiões com mais seguidores no mundo",
+          "top10": [
+            "Cristianismo",
+            "Islamismo",
+            "Hinduísmo",
+            "Budismo",
+            "Sikhismo",
+            "Judaísmo",
+            "Bahaísmo",
+            "Confucionismo",
+            "Jainismo",
+            "Xintoísmo"
+          ]
+        },
+        {
+          "id": 19,
+          "category": "Desertos mais extensos do mundo",
+          "top10": [
+            "Antártica",
+            "Ártico",
+            "Saara",
+            "Arábia",
+            "Gobi",
+            "Kalahari",
+            "Patagônia",
+            "Grande Deserto",
+            "Síria",
+            "Chihuahua"
+          ]
+        },
+        {
+          "id": 20,
+          "category": "Lagos mais extensos do mundo",
+          "top10": [
+            "Cáspio",
+            "Superior",
+            "Vitória",
+            "Huron",
+            "Michigan",
+            "Tanganica",
+            "Baikal",
+            "Grande Urso",
+            "Malawi",
+            "Grande Escravo"
+          ]
+        },
+        {
+          "id": 21,
+          "category": "Ilhas mais extensas do mundo",
+          "top10": [
+            "Groenlândia",
+            "Nova Guiné",
+            "Bornéu",
+            "Madagascar",
+            "Baffin",
+            "Sumatra",
+            "Honshu",
+            "Grã-Bretanha",
+            "Vitória",
+            "Ellesmere"
+          ]
+        },
+        {
+          "id": 22,
+          "category": "Vulcões mais altos do mundo",
+          "top10": [
+            "Ojos del Salado",
+            "Kilimanjaro",
+            "Monte Elbrus",
+            "Pico de Orizaba",
+            "Popocatépetl",
+            "Chimborazo",
+            "Monte Damavand",
+            "Mauna Loa",
+            "Cotopaxi",
+            "Monte Fuji"
+          ]
+        },
+        {
+          "id": 23,
+          "category": "Quedas d'água mais altas do mundo",
+          "top10": [
+            "Salto Angel",
+            "Tugela",
+            "Três Irmãs",
+            "Olo'upena",
+            "Yumbilla",
+            "Vinnufossen",
+            "Skorga",
+            "Pu'uka'oku",
+            "James Bruce",
+            "Browne"
+          ]
+        },
+        {
+          "id": 24,
+          "category": "Países mais visitados por turistas",
+          "top10": [
+            "França",
+            "Espanha",
+            "Estados Unidos",
+            "China",
+            "Itália",
+            "Turquia",
+            "México",
+            "Tailândia",
+            "Alemanha",
+            "Reino Unido"
+          ]
+        },
+        {
+          "id": 25,
+          "category": "Cidades mais visitadas do mundo",
+          "top10": [
+            "Bangkok",
+            "Paris",
+            "Londres",
+            "Dubai",
+            "Singapura",
+            "Nova York",
+            "Kuala Lumpur",
+            "Istambul",
+            "Tóquio",
+            "Barcelona"
+          ]
+        },
+        {
+          "id": 26,
+          "category": "Empresas mais valiosas do mundo",
+          "top10": [
+            "Apple",
+            "Microsoft",
+            "Saudi Aramco",
+            "Alphabet",
+            "Amazon",
+            "NVIDIA",
+            "Meta",
+            "Berkshire Hathaway",
+            "Tesla",
+            "TSMC"
+          ]
+        },
+        {
+          "id": 27,
+          "category": "Marcas de carros mais vendidas no mundo",
+          "top10": [
+            "Toyota",
+            "Volkswagen",
+            "Ford",
+            "Honda",
+            "Nissan",
+            "Chevrolet",
+            "Hyundai",
+            "Kia",
+            "Mercedes",
+            "BMW"
+          ]
+        },
+        {
+          "id": 28,
+          "category": "Aeroportos mais movimentados do mundo",
+          "top10": [
+            "Atlanta",
+            "Dubai",
+            "Dallas",
+            "Denver",
+            "Los Angeles",
+            "Istambul",
+            "Chicago",
+            "Londres Heathrow",
+            "Tóquio Haneda",
+            "Paris"
+          ]
+        },
+        {
+          "id": 29,
+          "category": "Prédios mais altos do mundo",
+          "top10": [
+            "Burj Khalifa",
+            "Merdeka 118",
+            "Shanghai Tower",
+            "Abraj Al-Bait",
+            "Ping An",
+            "Lotte World Tower",
+            "One World Trade",
+            "Guangzhou CTF",
+            "Tianjin CTF",
+            "China Zun"
+          ]
+        },
+        {
+          "id": 30,
+          "category": "Pontes mais longas do mundo",
+          "top10": [
+            "Danyang-Kunshan",
+            "Changhua-Kaohsiung",
+            "Cangde",
+            "Tianjin",
+            "Weinan Weihe",
+            "Hong Kong-Macau",
+            "Bang Na",
+            "Pequim",
+            "Lake Pontchartrain",
+            "Wuhan Metro"
+          ]
+        },
+        {
+          "id": 31,
+          "category": "Universidades mais antigas do mundo",
+          "top10": [
+            "Bolonha",
+            "Oxford",
+            "Salamanca",
+            "Paris",
+            "Cambridge",
+            "Pádua",
+            "Nápoles",
+            "Siena",
+            "Coimbra",
+            "Praga"
+          ]
+        },
+        {
+          "id": 32,
+          "category": "Países produtores de café",
+          "top10": [
+            "Brasil",
+            "Vietnã",
+            "Colômbia",
+            "Indonésia",
+            "Etiópia",
+            "Honduras",
+            "Índia",
+            "Uganda",
+            "México",
+            "Peru"
+          ]
+        },
+        {
+          "id": 33,
+          "category": "Países produtores de vinho",
+          "top10": [
+            "Itália",
+            "França",
+            "Espanha",
+            "Estados Unidos",
+            "Argentina",
+            "Chile",
+            "Austrália",
+            "África do Sul",
+            "Alemanha",
+            "Portugal"
+          ]
+        },
+        {
+          "id": 34,
+          "category": "Frutas mais produzidas no mundo",
+          "top10": [
+            "Banana",
+            "Melancia",
+            "Maçã",
+            "Laranja",
+            "Manga",
+            "Uva",
+            "Tangerina",
+            "Abacaxi",
+            "Pêra",
+            "Morango"
+          ]
+        },
+        {
+          "id": 35,
+          "category": "Cereais mais produzidos no mundo",
+          "top10": [
+            "Milho",
+            "Trigo",
+            "Arroz",
+            "Cevada",
+            "Sorgo",
+            "Aveia",
+            "Centeio",
+            "Milheto",
+            "Triticale",
+            "Quinoa"
+          ]
+        },
+        {
+          "id": 36,
+          "category": "Metais mais valiosos",
+          "top10": [
+            "Ródio",
+            "Paládio",
+            "Ouro",
+            "Irídio",
+            "Platina",
+            "Rutênio",
+            "Ósmio",
+            "Rênio",
+            "Prata",
+            "Índio"
+          ]
+        },
+        {
+          "id": 37,
+          "category": "Gases mais abundantes na atmosfera",
+          "top10": [
+            "Nitrogênio",
+            "Oxigênio",
+            "Argônio",
+            "Dióxido de Carbono",
+            "Neônio",
+            "Hélio",
+            "Metano",
+            "Criptônio",
+            "Hidrogênio",
+            "Xenônio"
+          ]
+        },
+        {
+          "id": 38,
+          "category": "Instrumentos musicais mais populares",
+          "top10": [
+            "Piano",
+            "Violão",
+            "Guitarra",
+            "Bateria",
+            "Violino",
+            "Flauta",
+            "Saxofone",
+            "Trompete",
+            "Baixo",
+            "Teclado"
+          ]
+        },
+        {
+          "id": 39,
+          "category": "Estilos musicais mais populares",
+          "top10": [
+            "Pop",
+            "Rock",
+            "Hip Hop",
+            "Eletrônica",
+            "R&B",
+            "Country",
+            "Jazz",
+            "Reggae",
+            "Blues",
+            "Clássica"
+          ]
+        },
+        {
+          "id": 40,
+          "category": "Artistas musicais mais vendidos da história",
+          "top10": [
+            "The Beatles",
+            "Elvis Presley",
+            "Michael Jackson",
+            "Madonna",
+            "Elton John",
+            "Queen",
+            "Led Zeppelin",
+            "Pink Floyd",
+            "Rihanna",
+            "Eminem"
+          ]
+        },
+        {
+          "id": 41,
+          "category": "Jogos de videogame mais vendidos",
+          "top10": [
+            "Minecraft",
+            "GTA V",
+            "Tetris",
+            "Wii Sports",
+            "PUBG",
+            "Mario Kart",
+            "Super Mario Bros",
+            "Red Dead Redemption",
+            "Pokémon",
+            "Terraria"
+          ]
+        },
+        {
+          "id": 42,
+          "category": "Plataformas de streaming mais usadas",
+          "top10": [
+            "Netflix",
+            "YouTube",
+            "Amazon Prime",
+            "Disney+",
+            "HBO Max",
+            "Hulu",
+            "Paramount+",
+            "Apple TV+",
+            "Peacock",
+            "Spotify"
+          ]
+        },
+        {
+          "id": 43,
+          "category": "Redes sociais mais usadas",
+          "top10": [
+            "Facebook",
+            "YouTube",
+            "WhatsApp",
+            "Instagram",
+            "TikTok",
+            "WeChat",
+            "Telegram",
+            "Snapchat",
+            "X",
+            "LinkedIn"
+          ]
+        },
+        {
+          "id": 44,
+          "category": "Livros mais vendidos da história",
+          "top10": [
+            "Bíblia",
+            "Alcorão",
+            "Dom Quixote",
+            "Harry Potter",
+            "O Senhor dos Anéis",
+            "O Pequeno Príncipe",
+            "Alice no País das Maravilhas",
+            "O Código Da Vinci",
+            "As Crônicas de Nárnia",
+            "Cem Anos de Solidão"
+          ]
+        },
+        {
+          "id": 45,
+          "category": "Escritores mais traduzidos do mundo",
+          "top10": [
+            "Agatha Christie",
+            "Jules Verne",
+            "Shakespeare",
+            "Enid Blyton",
+            "Barbara Cartland",
+            "Danielle Steel",
+            "Harold Robbins",
+            "Georges Simenon",
+            "Sidney Sheldon",
+            "J.K. Rowling"
+          ]
+        },
+        {
+          "id": 46,
+          "category": "Animais com maior expectativa de vida",
+          "top10": [
+            "Tubarão da Groenlândia",
+            "Baleia",
+            "Tartaruga",
+            "Elefante",
+            "Papagaio",
+            "Crocodilo",
+            "Carpa",
+            "Cisne",
+            "Chimpanzé",
+            "Cavalo"
+          ]
+        },
+        {
+          "id": 47,
+          "category": "Raças de cachorro mais populares",
+          "top10": [
+            "Labrador",
+            "Pastor Alemão",
+            "Golden Retriever",
+            "Bulldog",
+            "Beagle",
+            "Poodle",
+            "Rottweiler",
+            "Yorkshire",
+            "Boxer",
+            "Dachshund"
+          ]
+        },
+        {
+          "id": 48,
+          "category": "Cores mais populares para carros",
+          "top10": [
+            "Branco",
+            "Preto",
+            "Cinza",
+            "Prata",
+            "Azul",
+            "Vermelho",
+            "Marrom",
+            "Verde",
+            "Amarelo",
+            "Laranja"
+          ]
+        },
+        {
+          "id": 49,
+          "category": "Causas de morte mais comuns no mundo",
+          "top10": [
+            "Doença Cardíaca",
+            "AVC",
+            "Doença Pulmonar",
+            "Infecções Respiratórias",
+            "Alzheimer",
+            "Câncer de Pulmão",
+            "Diabetes",
+            "Acidentes de Trânsito",
+            "Diarreia",
+            "Tuberculose"
+          ]
+        },
+        {
+          "id": 50,
+          "category": "Países com maior PIB do mundo",
+          "top10": [
+            "Estados Unidos",
+            "China",
+            "Japão",
+            "Alemanha",
+            "Índia",
+            "Reino Unido",
+            "França",
+            "Itália",
+            "Brasil",
+            "Canadá"
           ]
         }
       ]
