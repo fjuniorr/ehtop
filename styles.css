@@ -447,6 +447,20 @@ h2 {
     border-color: #667eea;
 }
 
+.guess-error {
+    color: #ef5350;
+    font-size: 0.9rem;
+    font-weight: bold;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+.guess-buttons {
+    display: flex;
+    gap: 10px;
+}
+
 .challenge-area {
     text-align: center;
 }

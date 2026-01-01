@@ -46,6 +46,7 @@ const guessBtn = document.getElementById('guess-btn');
 const passBtn = document.getElementById('pass-btn');
 const guessInputArea = document.getElementById('guess-input-area');
 const guessInput = document.getElementById('guess-input');
+const guessError = document.getElementById('guess-error');
 const submitGuessBtn = document.getElementById('submit-guess-btn');
 const cancelGuessBtn = document.getElementById('cancel-guess-btn');
 const actionButtons = document.getElementById('action-buttons');
@@ -336,6 +337,8 @@ function showGuessInput() {
     hideActionButtons();
     guessInputArea.classList.remove('hidden');
     guessInput.value = '';
+    guessError.classList.add('hidden');
+    guessError.textContent = '';
     guessInput.focus();
     // Timer continues while typing
 }
@@ -343,6 +346,8 @@ function showGuessInput() {
 // Hide guess input
 function hideGuessInput() {
     guessInputArea.classList.add('hidden');
+    guessError.classList.add('hidden');
+    guessError.textContent = '';
     showActionButtons();
 }
 
@@ -354,13 +359,23 @@ function submitGuess() {
         return;
     }
 
+    const normalizedGuess = normalizeString(guess);
+
+    // Check if this guess has already been made
+    const isDuplicate = gameState.guesses.some(g => normalizeString(g.guess) === normalizedGuess);
+
+    if (isDuplicate) {
+        guessError.textContent = 'Este palpite já foi dado! Escolha outro.';
+        guessError.classList.remove('hidden');
+        return;
+    }
+
     const currentPlayer = gameState.players[gameState.currentPlayerIndex];
     gameState.currentGuess = guess;
     gameState.currentGuesser = currentPlayer;
 
     // Check if guess is correct
     const question = gameState.questions[gameState.currentQuestionIndex];
-    const normalizedGuess = normalizeString(guess);
     const isCorrect = question.top10.some(item => normalizeString(item) === normalizedGuess);
 
     // Store guess with player info
