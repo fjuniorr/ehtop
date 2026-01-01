@@ -273,23 +273,8 @@ h2 {
 .guesses-history h4 {
     text-align: center;
     color: #764ba2;
-    margin-bottom: 10px;
-    font-size: 1.1rem;
-}
-
-.challenger-note {
-    background: #fff3cd;
-    border-left: 4px solid #ffc107;
-    padding: 10px;
     margin-bottom: 15px;
-    border-radius: 5px;
-    font-size: 0.85rem;
-    color: #856404;
-    line-height: 1.4;
-}
-
-.challenger-note strong {
-    color: #664d03;
+    font-size: 1.1rem;
 }
 
 .guesses-list {
