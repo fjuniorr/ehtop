@@ -4,7 +4,7 @@ let gameState = {
     currentRound: 1,
     questions: [],
     revealedItems: [],
-    currentGuess: null,
+    pendingGuessResult: null,
     gameData: null,
     selectedDeckIndex: 0,
     turnTimerInterval: null,
@@ -97,12 +97,10 @@ const submitGuessBtn = document.getElementById('submit-guess-btn');
 const cancelGuessBtn = document.getElementById('cancel-guess-btn');
 const actionButtons = document.getElementById('action-buttons');
 const challengeArea = document.getElementById('challenge-area');
-const currentGuessText = document.getElementById('current-guess');
 const challengeBtn = document.getElementById('challenge-btn');
 const acceptBtn = document.getElementById('accept-btn');
 
 // Reveal modal elements
-const revealedGuess = document.getElementById('revealed-guess');
 const resultText = document.getElementById('result-text');
 const revealList = document.getElementById('reveal-list');
 const roundOutcome = document.getElementById('round-outcome');
@@ -171,7 +169,7 @@ function startNewRound() {
 
     const question = gameState.questions[gameState.currentQuestionIndex];
     gameState.revealedItems = [];
-    gameState.currentGuess = null;
+    gameState.pendingGuessResult = null;
     gameState.currentGuessOptions = shuffleArray([...question.top10]);
 
     currentCategory.textContent = question.category;
@@ -277,7 +275,13 @@ function submitGuess() {
         return;
     }
 
-    gameState.currentGuess = guess;
+    const question = gameState.questions[gameState.currentQuestionIndex];
+    const normalizedGuess = normalizeString(guess);
+    const matchedIndex = question.top10.findIndex(item => normalizeString(item) === normalizedGuess);
+    gameState.pendingGuessResult = {
+        isCorrect: matchedIndex !== -1,
+        matchedIndex: matchedIndex === -1 ? null : matchedIndex
+    };
 
     hideGuessInput();
     stopTurnTimer();
@@ -306,8 +310,6 @@ function handlePass() {
 
 // Show challenge area
 function showChallengeArea() {
-    currentGuessText.textContent = gameState.currentGuess;
-
     hideActionButtons();
     challengeArea.classList.remove('hidden');
     startChallengeTimer();
@@ -321,9 +323,7 @@ function hideChallengeArea() {
 
 // Handle challenge
 function handleChallenge() {
-    const question = gameState.questions[gameState.currentQuestionIndex];
-    const normalizedGuess = normalizeString(gameState.currentGuess);
-    const isCorrect = question.top10.some(item => normalizeString(item) === normalizedGuess);
+    const isCorrect = gameState.pendingGuessResult?.isCorrect ?? false;
 
     playChallengeSound();
     stopChallengeTimer();
@@ -333,30 +333,27 @@ function handleChallenge() {
 
 // Handle accept (no challenge)
 function handleAccept() {
-    const question = gameState.questions[gameState.currentQuestionIndex];
-    const normalizedGuess = normalizeString(gameState.currentGuess);
-    const isCorrect = question.top10.some(item => normalizeString(item) === normalizedGuess);
+    const isCorrect = gameState.pendingGuessResult?.isCorrect ?? false;
 
     stopChallengeTimer();
     hideChallengeArea();
 
     if (isCorrect) {
         // Reveal the item
-        const index = question.top10.findIndex(item => normalizeString(item) === normalizedGuess);
-        if (index !== -1 && !gameState.revealedItems.includes(index)) {
-            gameState.revealedItems.push(index);
+        const matchedIndex = gameState.pendingGuessResult?.matchedIndex;
+        if (matchedIndex !== null && matchedIndex !== undefined && !gameState.revealedItems.includes(matchedIndex)) {
+            gameState.revealedItems.push(matchedIndex);
             renderTop10List();
         }
     }
 
+    gameState.pendingGuessResult = null;
     checkRoundEnd();
 }
 
 // Show reveal modal
 function showRevealModal(isCorrect, wasChallenged) {
     const question = gameState.questions[gameState.currentQuestionIndex];
-
-    revealedGuess.textContent = gameState.currentGuess;
 
     if (isCorrect) {
         resultText.textContent = 'É TOP! ✅';
@@ -376,18 +373,9 @@ function showRevealModal(isCorrect, wasChallenged) {
 
     // Show full top 10 list
     revealList.innerHTML = '';
-    const normalizedGuess = normalizeString(gameState.currentGuess);
     question.top10.forEach((item, index) => {
         const li = document.createElement('li');
         li.textContent = `${index + 1}. ${item}`;
-
-        // Highlight the guessed item if it matches
-        if (normalizeString(item) === normalizedGuess) {
-            li.style.fontWeight = 'bold';
-            li.style.background = '#ffd700';
-            li.style.padding = '5px';
-            li.style.borderRadius = '3px';
-        }
 
         revealList.appendChild(li);
     });
@@ -418,23 +406,21 @@ function showRevealModal(isCorrect, wasChallenged) {
 function continueGame() {
     const isCorrect = revealModal.dataset.isCorrect === 'true';
     const wasChallenged = revealModal.dataset.wasChallenged === 'true';
-    const question = gameState.questions[gameState.currentQuestionIndex];
 
     revealModal.classList.remove('active');
 
     if (wasChallenged) {
         if (isCorrect) {
             // Reveal the correct item
-            const index = question.top10.findIndex(item =>
-                normalizeString(item) === normalizeString(gameState.currentGuess)
-            );
-            if (index !== -1 && !gameState.revealedItems.includes(index)) {
-                gameState.revealedItems.push(index);
+            const matchedIndex = gameState.pendingGuessResult?.matchedIndex;
+            if (matchedIndex !== null && matchedIndex !== undefined && !gameState.revealedItems.includes(matchedIndex)) {
+                gameState.revealedItems.push(matchedIndex);
             }
         }
     }
 
     renderTop10List();
+    gameState.pendingGuessResult = null;
     checkRoundEnd();
 }
 
