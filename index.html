@@ -66,6 +66,7 @@
                     <!-- Guesses History -->
                     <div id="guesses-history" class="guesses-history">
                         <h4>Palpites da Rodada</h4>
+                        <p class="challenger-note">⚠️ <strong>Apenas para o Desafiante:</strong> Verifique esta lista para casos ambíguos (ex: "Elefante" vs "Elefante Branco")</p>
                         <div id="guesses-list" class="guesses-list">
                             <p class="no-guesses">Nenhum palpite ainda</p>
                         </div>
@@ -81,6 +82,18 @@
                 <div class="action-center">
                     <div id="current-player-display" class="current-player-display">
                         Vez de: <span id="current-player-name">Jogador</span>
+                    </div>
+
+                    <!-- Turn Timer -->
+                    <div id="turn-timer" class="timer hidden">
+                        <span class="timer-label">⏱️ Tempo de decisão:</span>
+                        <span id="turn-timer-value" class="timer-value">0s</span>
+                    </div>
+
+                    <!-- Challenge Timer -->
+                    <div id="challenge-timer" class="timer hidden">
+                        <span class="timer-label">⏱️ Tempo para desafiar:</span>
+                        <span id="challenge-timer-value" class="timer-value">0s</span>
                     </div>
 
                     <div id="guess-input-area" class="guess-input-area hidden">

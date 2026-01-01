@@ -11,7 +11,11 @@ let gameState = {
     playersInRound: [],
     guesses: [], // Track all guesses in the round: { playerId, playerName, guess, isCorrect }
     gameData: null,
-    selectedDeckIndex: 0
+    selectedDeckIndex: 0,
+    turnTimerInterval: null,
+    turnTimerSeconds: 0,
+    challengeTimerInterval: null,
+    challengeTimerSeconds: 0
 };
 
 // DOM Elements
@@ -34,6 +38,10 @@ const top10List = document.getElementById('top10-list');
 const guessesList = document.getElementById('guesses-list');
 const playersArea = document.getElementById('players-area');
 const currentPlayerDisplay = document.getElementById('current-player-name');
+const turnTimerElement = document.getElementById('turn-timer');
+const turnTimerValue = document.getElementById('turn-timer-value');
+const challengeTimerElement = document.getElementById('challenge-timer');
+const challengeTimerValue = document.getElementById('challenge-timer-value');
 const guessBtn = document.getElementById('guess-btn');
 const passBtn = document.getElementById('pass-btn');
 const guessInputArea = document.getElementById('guess-input-area');
@@ -171,6 +179,10 @@ function startNewRound() {
     currentCategory.textContent = question.category;
     roundNumber.textContent = `Rodada ${gameState.currentRound}`;
 
+    // Stop any running timers
+    stopTurnTimer();
+    stopChallengeTimer();
+
     renderTop10List();
     renderPlayers();
     renderGuesses();
@@ -259,14 +271,11 @@ function renderGuesses() {
 
     gameState.guesses.forEach(guess => {
         const guessItem = document.createElement('div');
-        guessItem.className = `guess-item ${guess.isCorrect ? 'correct' : 'incorrect'}`;
+        guessItem.className = 'guess-item';
 
         guessItem.innerHTML = `
             <span class="guess-player">${guess.playerName}:</span>
             <span class="guess-text">${guess.guess}</span>
-            <span class="guess-status ${guess.isCorrect ? 'correct' : 'incorrect'}">
-                ${guess.isCorrect ? '✓ TOP' : '? Indefinido'}
-            </span>
         `;
 
         guessesList.appendChild(guessItem);
@@ -279,12 +288,56 @@ function updateCurrentPlayerDisplay() {
     currentPlayerDisplay.textContent = currentPlayer.name;
 }
 
+// Timer functions
+function startTurnTimer() {
+    stopTurnTimer();
+    gameState.turnTimerSeconds = 0;
+    turnTimerElement.classList.remove('hidden');
+    turnTimerValue.textContent = '0s';
+
+    gameState.turnTimerInterval = setInterval(() => {
+        gameState.turnTimerSeconds++;
+        turnTimerValue.textContent = `${gameState.turnTimerSeconds}s`;
+    }, 1000);
+}
+
+function stopTurnTimer() {
+    if (gameState.turnTimerInterval) {
+        clearInterval(gameState.turnTimerInterval);
+        gameState.turnTimerInterval = null;
+    }
+    turnTimerElement.classList.add('hidden');
+    gameState.turnTimerSeconds = 0;
+}
+
+function startChallengeTimer() {
+    stopChallengeTimer();
+    gameState.challengeTimerSeconds = 0;
+    challengeTimerElement.classList.remove('hidden');
+    challengeTimerValue.textContent = '0s';
+
+    gameState.challengeTimerInterval = setInterval(() => {
+        gameState.challengeTimerSeconds++;
+        challengeTimerValue.textContent = `${gameState.challengeTimerSeconds}s`;
+    }, 1000);
+}
+
+function stopChallengeTimer() {
+    if (gameState.challengeTimerInterval) {
+        clearInterval(gameState.challengeTimerInterval);
+        gameState.challengeTimerInterval = null;
+    }
+    challengeTimerElement.classList.add('hidden');
+    gameState.challengeTimerSeconds = 0;
+}
+
 // Show guess input
 function showGuessInput() {
     hideActionButtons();
     guessInputArea.classList.remove('hidden');
     guessInput.value = '';
     guessInput.focus();
+    // Timer continues while typing
 }
 
 // Hide guess input
@@ -319,11 +372,13 @@ function submitGuess() {
     });
 
     hideGuessInput();
+    stopTurnTimer();
     showChallengeArea();
 }
 
 // Handle pass
 function handlePass() {
+    stopTurnTimer();
     const playerInRound = gameState.playersInRound.find(
         p => p.id === gameState.players[gameState.currentPlayerIndex].id
     );
@@ -343,11 +398,13 @@ function showChallengeArea() {
 
     hideActionButtons();
     challengeArea.classList.remove('hidden');
+    startChallengeTimer();
 }
 
 // Hide challenge area
 function hideChallengeArea() {
     challengeArea.classList.add('hidden');
+    stopChallengeTimer();
 }
 
 // Handle challenge
@@ -356,6 +413,7 @@ function handleChallenge() {
     const normalizedGuess = normalizeString(gameState.currentGuess);
     const isCorrect = question.top10.some(item => normalizeString(item) === normalizedGuess);
 
+    stopChallengeTimer();
     hideChallengeArea();
     showRevealModal(isCorrect, true);
 }
@@ -366,6 +424,7 @@ function handleAccept() {
     const normalizedGuess = normalizeString(gameState.currentGuess);
     const isCorrect = question.top10.some(item => normalizeString(item) === normalizedGuess);
 
+    stopChallengeTimer();
     hideChallengeArea();
 
     if (isCorrect) {
@@ -602,6 +661,7 @@ function showActionButtons() {
 
     if (playerInRound && !playerInRound.passed) {
         actionButtons.classList.remove('hidden');
+        startTurnTimer();
     } else {
         actionButtons.classList.add('hidden');
         moveToNextPlayer();
@@ -611,6 +671,7 @@ function showActionButtons() {
 
 function hideActionButtons() {
     actionButtons.classList.add('hidden');
+    stopTurnTimer();
 }
 
 // End game
@@ -650,6 +711,10 @@ function endGame(winner) {
 
 // Reset game
 function resetGame() {
+    // Stop any running timers
+    stopTurnTimer();
+    stopChallengeTimer();
+
     gameState = {
         players: [],
         currentPlayerIndex: 0,
@@ -662,7 +727,11 @@ function resetGame() {
         playersInRound: [],
         guesses: [],
         gameData: gameState.gameData,
-        selectedDeckIndex: 0
+        selectedDeckIndex: 0,
+        turnTimerInterval: null,
+        turnTimerSeconds: 0,
+        challengeTimerInterval: null,
+        challengeTimerSeconds: 0
     };
 
     switchScreen(gameoverScreen, setupScreen);
