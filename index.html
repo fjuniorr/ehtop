@@ -14,15 +14,6 @@
             <p class="subtitle">Jogo de Trivia e Apostas</p>
 
             <div class="setup-content">
-                <div class="players-input">
-                    <h2>Adicionar Jogadores (2-10)</h2>
-                    <div id="player-inputs">
-                        <input type="text" class="player-name-input" placeholder="Jogador 1" maxlength="20">
-                        <input type="text" class="player-name-input" placeholder="Jogador 2" maxlength="20">
-                    </div>
-                    <button id="add-player-btn" class="btn btn-secondary">+ Adicionar Jogador</button>
-                </div>
-
                 <div class="deck-selection">
                     <h2>Selecionar Tema</h2>
                     <select id="deck-select" class="deck-select">
@@ -65,17 +56,8 @@
 
                 </div>
 
-                <!-- Players Area -->
-                <div id="players-area" class="players-area">
-                    <!-- Players will be dynamically added here -->
-                </div>
-
                 <!-- Action Center -->
                 <div class="action-center">
-                    <div id="current-player-display" class="current-player-display">
-                        Vez de: <span id="current-player-name">Jogador</span>
-                    </div>
-
                     <!-- Turn Timer -->
                     <div id="turn-timer" class="timer hidden">
                         <span class="timer-label">⏱️ Tempo de decisão:</span>
@@ -104,14 +86,9 @@
 
                     <div id="challenge-area" class="challenge-area hidden">
                         <p class="challenge-text">
-                            <strong id="guesser-name">Jogador</strong> apostou em:
+                            A aposta foi:
                             <strong id="current-guess">Resposta</strong>
                         </p>
-                        <div class="challenge-select">
-                            <label for="challenger-select">Quem desafiou?</label>
-                            <select id="challenger-select" class="challenger-select"></select>
-                            <p id="challenger-error" class="guess-error hidden"></p>
-                        </div>
                         <button id="challenge-btn" class="btn btn-danger">Desafiar!</button>
                         <button id="accept-btn" class="btn btn-success">Aceitar</button>
                     </div>
@@ -141,26 +118,6 @@
             </div>
 
             <button id="continue-btn" class="btn btn-primary">Continuar</button>
-        </div>
-    </div>
-
-    <!-- Tela 4: Game Over -->
-    <div id="gameover-screen" class="screen">
-        <div class="container">
-            <h1 class="game-title">Fim de Jogo!</h1>
-
-            <div id="winner-display" class="winner-display">
-                <!-- Winner info will be inserted here -->
-            </div>
-
-            <div class="final-scores">
-                <h2>Placar Final</h2>
-                <div id="final-scores-list">
-                    <!-- Scores will be inserted here -->
-                </div>
-            </div>
-
-            <button id="play-again-btn" class="btn btn-primary">Jogar Novamente</button>
         </div>
     </div>
 

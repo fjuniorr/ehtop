@@ -1,15 +1,10 @@
 // Game State
 let gameState = {
-    players: [],
-    currentPlayerIndex: 0,
     currentQuestionIndex: 0,
     currentRound: 1,
     questions: [],
     revealedItems: [],
     currentGuess: null,
-    currentGuesser: null,
-    currentChallenger: null,
-    playersInRound: [],
     gameData: null,
     selectedDeckIndex: 0,
     turnTimerInterval: null,
@@ -79,11 +74,8 @@ function playIncorrectChallengeSound() {
 const setupScreen = document.getElementById('setup-screen');
 const gameScreen = document.getElementById('game-screen');
 const revealModal = document.getElementById('reveal-modal');
-const gameoverScreen = document.getElementById('gameover-screen');
 
 // Setup elements
-const playerInputsContainer = document.getElementById('player-inputs');
-const addPlayerBtn = document.getElementById('add-player-btn');
 const startGameBtn = document.getElementById('start-game-btn');
 const setupError = document.getElementById('setup-error');
 const deckSelect = document.getElementById('deck-select');
@@ -92,8 +84,6 @@ const deckSelect = document.getElementById('deck-select');
 const currentCategory = document.getElementById('current-category');
 const roundNumber = document.getElementById('round-number');
 const top10List = document.getElementById('top10-list');
-const playersArea = document.getElementById('players-area');
-const currentPlayerDisplay = document.getElementById('current-player-name');
 const turnTimerElement = document.getElementById('turn-timer');
 const turnTimerValue = document.getElementById('turn-timer-value');
 const challengeTimerElement = document.getElementById('challenge-timer');
@@ -107,10 +97,7 @@ const submitGuessBtn = document.getElementById('submit-guess-btn');
 const cancelGuessBtn = document.getElementById('cancel-guess-btn');
 const actionButtons = document.getElementById('action-buttons');
 const challengeArea = document.getElementById('challenge-area');
-const guesserName = document.getElementById('guesser-name');
 const currentGuessText = document.getElementById('current-guess');
-const challengerSelect = document.getElementById('challenger-select');
-const challengerError = document.getElementById('challenger-error');
 const challengeBtn = document.getElementById('challenge-btn');
 const acceptBtn = document.getElementById('accept-btn');
 
@@ -120,11 +107,6 @@ const resultText = document.getElementById('result-text');
 const revealList = document.getElementById('reveal-list');
 const roundOutcome = document.getElementById('round-outcome');
 const continueBtn = document.getElementById('continue-btn');
-
-// Game over elements
-const winnerDisplay = document.getElementById('winner-display');
-const finalScoresList = document.getElementById('final-scores-list');
-const playAgainBtn = document.getElementById('play-again-btn');
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
@@ -157,7 +139,6 @@ function populateDeckSelect() {
 
 // Setup Event Listeners
 function setupEventListeners() {
-    addPlayerBtn.addEventListener('click', addPlayerInput);
     startGameBtn.addEventListener('click', startGame);
     guessBtn.addEventListener('click', showGuessInput);
     passBtn.addEventListener('click', handlePass);
@@ -166,60 +147,13 @@ function setupEventListeners() {
     challengeBtn.addEventListener('click', handleChallenge);
     acceptBtn.addEventListener('click', handleAccept);
     continueBtn.addEventListener('click', continueGame);
-    playAgainBtn.addEventListener('click', resetGame);
-    challengerSelect.addEventListener('change', () => {
-        if (challengerSelect.value) {
-            challengerError.classList.add('hidden');
-            challengerError.textContent = '';
-        }
-    });
-}
-
-// Add player input field
-function addPlayerInput() {
-    const playerInputs = document.querySelectorAll('.player-name-input');
-    if (playerInputs.length >= 10) {
-        setupError.textContent = 'Máximo de 10 jogadores!';
-        return;
-    }
-
-    const input = document.createElement('input');
-    input.type = 'text';
-    input.className = 'player-name-input';
-    input.placeholder = `Jogador ${playerInputs.length + 1}`;
-    input.maxLength = 20;
-    playerInputsContainer.appendChild(input);
-    setupError.textContent = '';
 }
 
 // Start game
 function startGame() {
-    const playerInputs = document.querySelectorAll('.player-name-input');
-    const playerNames = Array.from(playerInputs)
-        .map(input => input.value.trim())
-        .filter(name => name !== '');
-
-    if (playerNames.length < 2) {
-        setupError.textContent = 'Adicione pelo menos 2 jogadores!';
-        return;
-    }
-
+    setupError.textContent = '';
     gameState.selectedDeckIndex = parseInt(deckSelect.value);
     gameState.questions = shuffleArray([...gameState.gameData.decks[gameState.selectedDeckIndex].questions]);
-
-    // Initialize players
-    const initializedPlayers = playerNames.map((name, index) => ({
-        id: index,
-        name: name,
-        lives: 4,
-        cards: 0,
-        eliminated: false
-    }));
-
-    // Shuffle players so turn order is randomized
-    gameState.players = shuffleArray(initializedPlayers);
-
-    gameState.currentPlayerIndex = 0;
     gameState.currentQuestionIndex = 0;
     gameState.currentRound = 1;
 
@@ -238,11 +172,6 @@ function startNewRound() {
     const question = gameState.questions[gameState.currentQuestionIndex];
     gameState.revealedItems = [];
     gameState.currentGuess = null;
-    gameState.currentGuesser = null;
-    gameState.currentChallenger = null;
-    gameState.playersInRound = gameState.players
-        .filter(p => !p.eliminated)
-        .map(p => ({ ...p, passed: false }));
 
     currentCategory.textContent = question.category;
     roundNumber.textContent = `Rodada ${gameState.currentRound}`;
@@ -252,8 +181,6 @@ function startNewRound() {
     stopChallengeTimer();
 
     renderTop10List();
-    renderPlayers();
-    updateCurrentPlayerDisplay();
     hideGuessInput();
     hideChallengeArea();
     showActionButtons();
@@ -276,61 +203,6 @@ function renderTop10List() {
             item.classList.add('hidden');
         }
     });
-}
-
-// Render players
-function renderPlayers() {
-    playersArea.innerHTML = '';
-
-    gameState.players.forEach((player, index) => {
-        const playerCard = document.createElement('div');
-        playerCard.className = 'player-card';
-
-        if (player.eliminated) {
-            playerCard.classList.add('eliminated');
-        }
-
-        const playerInRound = gameState.playersInRound.find(p => p.id === player.id);
-        if (playerInRound && playerInRound.passed) {
-            playerCard.classList.add('passed');
-        }
-
-        if (index === gameState.currentPlayerIndex && !player.eliminated) {
-            playerCard.classList.add('current');
-        }
-
-        // Lives (hearts)
-        let livesHTML = '';
-        for (let i = 0; i < 4; i++) {
-            if (i < player.lives) {
-                livesHTML += '<span class="heart">❤️</span>';
-            } else {
-                livesHTML += '<span class="heart lost">🖤</span>';
-            }
-        }
-
-        // Cards (points)
-        let cardsHTML = '';
-        for (let i = 0; i < player.cards; i++) {
-            cardsHTML += '<span class="card">🃏</span>';
-        }
-
-        playerCard.innerHTML = `
-            <div class="player-name">${player.name}</div>
-            <div class="player-stats">
-                <div class="lives">${livesHTML}</div>
-                <div class="points">${cardsHTML}</div>
-            </div>
-        `;
-
-        playersArea.appendChild(playerCard);
-    });
-}
-
-// Update current player display
-function updateCurrentPlayerDisplay() {
-    const currentPlayer = gameState.players[gameState.currentPlayerIndex];
-    currentPlayerDisplay.textContent = currentPlayer.name;
 }
 
 // Timer functions
@@ -403,10 +275,7 @@ function submitGuess() {
         return;
     }
 
-    const currentPlayer = gameState.players[gameState.currentPlayerIndex];
     gameState.currentGuess = guess;
-    gameState.currentGuesser = currentPlayer;
-    gameState.currentChallenger = null;
 
     hideGuessInput();
     stopTurnTimer();
@@ -416,24 +285,12 @@ function submitGuess() {
 // Handle pass
 function handlePass() {
     stopTurnTimer();
-    const playerInRound = gameState.playersInRound.find(
-        p => p.id === gameState.players[gameState.currentPlayerIndex].id
-    );
-
-    if (playerInRound) {
-        playerInRound.passed = true;
-    }
-
-    renderPlayers();
-    checkRoundEnd();
+    endRound();
 }
 
 // Show challenge area
 function showChallengeArea() {
-    guesserName.textContent = gameState.currentGuesser.name;
     currentGuessText.textContent = gameState.currentGuess;
-    gameState.currentChallenger = null;
-    populateChallengerSelect();
 
     hideActionButtons();
     challengeArea.classList.remove('hidden');
@@ -443,54 +300,11 @@ function showChallengeArea() {
 // Hide challenge area
 function hideChallengeArea() {
     challengeArea.classList.add('hidden');
-    challengerError.classList.add('hidden');
-    challengerError.textContent = '';
     stopChallengeTimer();
-}
-
-function populateChallengerSelect() {
-    const availableChallengers = gameState.players.filter(
-        player => !player.eliminated && player.id !== gameState.currentGuesser.id
-    );
-
-    challengerSelect.innerHTML = '';
-    challengerSelect.disabled = availableChallengers.length === 0;
-    challengeBtn.disabled = availableChallengers.length === 0;
-    challengerError.classList.add('hidden');
-    challengerError.textContent = '';
-
-    const placeholder = document.createElement('option');
-    placeholder.value = '';
-    placeholder.textContent = availableChallengers.length
-        ? 'Selecione o desafiante'
-        : 'Nenhum desafiante disponível';
-    placeholder.disabled = true;
-    placeholder.selected = true;
-    challengerSelect.appendChild(placeholder);
-
-    availableChallengers.forEach(player => {
-        const option = document.createElement('option');
-        option.value = player.id;
-        option.textContent = player.name;
-        challengerSelect.appendChild(option);
-    });
 }
 
 // Handle challenge
 function handleChallenge() {
-    if (challengerSelect.disabled) {
-        return;
-    }
-
-    const challengerId = parseInt(challengerSelect.value, 10);
-    if (Number.isNaN(challengerId)) {
-        challengerError.textContent = 'Selecione quem desafiou antes de continuar.';
-        challengerError.classList.remove('hidden');
-        return;
-    }
-
-    gameState.currentChallenger = gameState.players.find(player => player.id === challengerId) || null;
-
     const question = gameState.questions[gameState.currentQuestionIndex];
     const normalizedGuess = normalizeString(gameState.currentGuess);
     const isCorrect = question.top10.some(item => normalizeString(item) === normalizedGuess);
@@ -519,9 +333,6 @@ function handleAccept() {
         }
     }
 
-    // Continue to next player regardless of whether guess was correct or not
-    // No penalty when there's no challenge, even if guess was wrong
-    moveToNextPlayer();
     checkRoundEnd();
 }
 
@@ -569,21 +380,16 @@ function showRevealModal(isCorrect, wasChallenged) {
     let outcomeHTML = '';
 
     if (wasChallenged) {
-        const challengerName = gameState.currentChallenger
-            ? gameState.currentChallenger.name
-            : 'O desafiante';
-        if (isCorrect) {
-            // Guess was correct, challenger loses life
-            outcomeHTML = `<strong>${gameState.currentGuesser.name}</strong> estava certo! ${challengerName} perde 1 vida.`;
-        } else {
-            // Guess was incorrect, guesser loses life, challenger wins card
-            outcomeHTML = `<strong>${gameState.currentGuesser.name}</strong> estava errado! Perde 1 vida e ${challengerName} ganha 1 carta!`;
-        }
+        outcomeHTML = 'Registre vidas e pontos offline conforme o resultado.';
     }
-    // Note: No outcome message when not challenged - this should not happen now
-    // as handleAccept() no longer calls showRevealModal for incorrect guesses
 
-    roundOutcome.innerHTML = outcomeHTML;
+    if (outcomeHTML) {
+        roundOutcome.innerHTML = outcomeHTML;
+        roundOutcome.classList.remove('hidden');
+    } else {
+        roundOutcome.innerHTML = '';
+        roundOutcome.classList.add('hidden');
+    }
 
     // Store outcome data for processing
     revealModal.dataset.isCorrect = isCorrect;
@@ -600,20 +406,8 @@ function continueGame() {
 
     revealModal.classList.remove('active');
 
-    // Only process challenge outcomes (since handleAccept handles non-challenge cases)
     if (wasChallenged) {
-        const challenger = gameState.currentChallenger;
-        if (!challenger) {
-            renderTop10List();
-            renderPlayers();
-            moveToNextPlayer();
-            checkRoundEnd();
-            return;
-        }
         if (isCorrect) {
-            // Challenger loses life - we need to ask who challenged
-            loseLife(challenger);
-
             // Reveal the correct item
             const index = question.top10.findIndex(item =>
                 normalizeString(item) === normalizeString(gameState.currentGuess)
@@ -621,108 +415,26 @@ function continueGame() {
             if (index !== -1 && !gameState.revealedItems.includes(index)) {
                 gameState.revealedItems.push(index);
             }
-
-            // Remove challenger from round
-            const challengerInRound = gameState.playersInRound.find(
-                p => p.id === challenger.id
-            );
-            if (challengerInRound) {
-                challengerInRound.passed = true;
-            }
-        } else {
-            // Guesser loses life
-            loseLife(gameState.currentGuesser);
-
-            // Challenger wins card
-            challenger.cards++;
-
-            if (checkWinCondition(challenger)) {
-                return;
-            }
-
-            // Remove guesser from round
-            const guesserInRound = gameState.playersInRound.find(
-                p => p.id === gameState.currentGuesser.id
-            );
-            if (guesserInRound) {
-                guesserInRound.passed = true;
-            }
-
-            // End round, challenger won
-            endRound(challenger.id);
-            return;
         }
     }
 
     renderTop10List();
-    renderPlayers();
-    moveToNextPlayer();
     checkRoundEnd();
-}
-
-// Lose life
-function loseLife(player) {
-    player.lives--;
-
-    if (player.lives <= 0) {
-        player.eliminated = true;
-
-        // Check if only one player remains
-        const activePlayers = gameState.players.filter(p => !p.eliminated);
-        if (activePlayers.length === 1) {
-            endGame(activePlayers[0]);
-        }
-    }
-}
-
-// Check win condition
-function checkWinCondition(player) {
-    if (player.cards >= 4) {
-        endGame(player);
-        return true;
-    }
-    return false;
-}
-
-// Move to next player
-function moveToNextPlayer() {
-    let nextIndex = (gameState.currentPlayerIndex + 1) % gameState.players.length;
-
-    // Skip eliminated players
-    while (gameState.players[nextIndex].eliminated &&
-           nextIndex !== gameState.currentPlayerIndex) {
-        nextIndex = (nextIndex + 1) % gameState.players.length;
-    }
-
-    gameState.currentPlayerIndex = nextIndex;
-    updateCurrentPlayerDisplay();
 }
 
 // Check if round should end
 function checkRoundEnd() {
-    const activePlayers = gameState.playersInRound.filter(p => !p.passed && !p.eliminated);
-
-    if (activePlayers.length === 1) {
-        // Last player wins the card
-        const winner = gameState.players.find(p => p.id === activePlayers[0].id);
-        winner.cards++;
-
-        if (checkWinCondition(winner)) {
-            return;
-        }
-
-        endRound(winner.id);
-    } else if (activePlayers.length === 0) {
-        // All players passed or eliminated, no winner
-        endRound(null);
-    } else {
-        // Continue round
-        showActionButtons();
+    const question = gameState.questions[gameState.currentQuestionIndex];
+    if (gameState.revealedItems.length >= question.top10.length) {
+        endRound();
+        return;
     }
+
+    showActionButtons();
 }
 
 // End round
-function endRound(winnerId) {
+function endRound() {
     gameState.currentQuestionIndex++;
     gameState.currentRound++;
 
@@ -733,85 +445,13 @@ function endRound(winnerId) {
 
 // Show/hide UI elements
 function showActionButtons() {
-    const currentPlayer = gameState.players[gameState.currentPlayerIndex];
-    const playerInRound = gameState.playersInRound.find(p => p.id === currentPlayer.id);
-
-    if (playerInRound && !playerInRound.passed) {
-        actionButtons.classList.remove('hidden');
-        startTurnTimer();
-    } else {
-        actionButtons.classList.add('hidden');
-        moveToNextPlayer();
-        checkRoundEnd();
-    }
+    actionButtons.classList.remove('hidden');
+    startTurnTimer();
 }
 
 function hideActionButtons() {
     actionButtons.classList.add('hidden');
     stopTurnTimer();
-}
-
-// End game
-function endGame(winner) {
-    switchScreen(gameScreen, gameoverScreen);
-
-    winnerDisplay.innerHTML = `
-        <h2>🎉 Vencedor 🎉</h2>
-        <div class="winner-name">${winner.name}</div>
-    `;
-
-    // Sort players by cards, then by lives
-    const sortedPlayers = [...gameState.players].sort((a, b) => {
-        if (b.cards !== a.cards) {
-            return b.cards - a.cards;
-        }
-        return b.lives - a.lives;
-    });
-
-    finalScoresList.innerHTML = '';
-    sortedPlayers.forEach(player => {
-        const scoreItem = document.createElement('div');
-        scoreItem.className = 'score-item';
-
-        if (player.id === winner.id) {
-            scoreItem.classList.add('winner');
-        }
-
-        scoreItem.innerHTML = `
-            <span>${player.name}</span>
-            <span>${player.cards} cartas | ${player.lives} vidas</span>
-        `;
-
-        finalScoresList.appendChild(scoreItem);
-    });
-}
-
-// Reset game
-function resetGame() {
-    // Stop any running timers
-    stopTurnTimer();
-    stopChallengeTimer();
-
-    gameState = {
-        players: [],
-        currentPlayerIndex: 0,
-        currentQuestionIndex: 0,
-        currentRound: 1,
-        questions: [],
-        revealedItems: [],
-        currentGuess: null,
-        currentGuesser: null,
-        currentChallenger: null,
-        playersInRound: [],
-        gameData: gameState.gameData,
-        selectedDeckIndex: 0,
-        turnTimerInterval: null,
-        turnTimerSeconds: 0,
-        challengeTimerInterval: null,
-        challengeTimerSeconds: 0
-    };
-
-    switchScreen(gameoverScreen, setupScreen);
 }
 
 // Utility functions
