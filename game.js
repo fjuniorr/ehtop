@@ -201,13 +201,16 @@ function startGame() {
     gameState.questions = shuffleArray([...gameState.gameData.decks[gameState.selectedDeckIndex].questions]);
 
     // Initialize players
-    gameState.players = playerNames.map((name, index) => ({
+    const initializedPlayers = playerNames.map((name, index) => ({
         id: index,
         name: name,
         lives: 4,
         cards: 0,
         eliminated: false
     }));
+
+    // Shuffle players so turn order is randomized
+    gameState.players = shuffleArray(initializedPlayers);
 
     gameState.currentPlayerIndex = 0;
     gameState.currentQuestionIndex = 0;
