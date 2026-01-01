@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>É Top? v0.0.0.9002</title>
+    <title>É Top? v0.0.0.9003</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -63,10 +63,6 @@
                         <li class="top10-item hidden"><span class="item-number">10</span><span class="item-text">???</span></li>
                     </ol>
 
-                    <div class="guess-history">
-                        <h3>Auditoria de Palpites</h3>
-                        <ul id="guess-history-list" class="guess-history-list"></ul>
-                    </div>
                 </div>
 
                 <!-- Players Area -->
@@ -76,21 +72,25 @@
 
                 <!-- Action Center -->
                 <div class="action-center">
-                    <div id="current-player-display" class="current-player-display">
-                        <span class="current-player-label">Vez de:</span>
-                        <span id="current-player-name" class="current-player-name">Jogador</span>
-                    </div>
+                    <div class="turn-info">
+                        <div id="current-player-display" class="current-player-display">
+                            <span class="current-player-label">Vez de:</span>
+                            <span id="current-player-name" class="current-player-name">Jogador</span>
+                        </div>
 
-                    <!-- Turn Timer -->
-                    <div id="turn-timer" class="timer hidden">
-                        <span class="timer-label">⏱️ Tempo de decisão:</span>
-                        <span id="turn-timer-value" class="timer-value">0s</span>
-                    </div>
+                        <div class="timer-group">
+                            <!-- Turn Timer -->
+                            <div id="turn-timer" class="timer hidden">
+                                <span class="timer-label">⏱️ Tempo de decisão:</span>
+                                <span id="turn-timer-value" class="timer-value">0s</span>
+                            </div>
 
-                    <!-- Challenge Timer -->
-                    <div id="challenge-timer" class="timer hidden">
-                        <span class="timer-label">⏱️ Tempo para desafiar:</span>
-                        <span id="challenge-timer-value" class="timer-value">0s</span>
+                            <!-- Challenge Timer -->
+                            <div id="challenge-timer" class="timer hidden">
+                                <span class="timer-label">⏱️ Tempo para desafiar:</span>
+                                <span id="challenge-timer-value" class="timer-value">0s</span>
+                            </div>
+                        </div>
                     </div>
 
                     <div id="guess-input-area" class="guess-input-area hidden">
@@ -103,8 +103,8 @@
                     </div>
 
                     <div id="action-buttons" class="action-buttons">
-                        <button id="guess-btn" class="btn btn-primary">Adivinhar</button>
-                        <button id="pass-btn" class="btn btn-warning">Passar</button>
+                        <button id="guess-btn" class="btn btn-primary">🎯 Adivinhar</button>
+                        <button id="pass-btn" class="btn btn-warning">⏭️ Passar</button>
                     </div>
 
                     <div id="challenge-area" class="challenge-area hidden">
@@ -120,6 +120,11 @@
                         <button id="challenge-btn" class="btn btn-danger">Desafiar!</button>
                         <button id="accept-btn" class="btn btn-success">Aceitar</button>
                     </div>
+                </div>
+
+                <div id="guess-history-container" class="guess-history">
+                    <h3>Auditoria de Palpites</h3>
+                    <ul id="guess-history-list" class="guess-history-list"></ul>
                 </div>
             </div>
         </div>
