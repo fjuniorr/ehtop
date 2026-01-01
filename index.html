@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>É Top? - Jogo de Festa</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Tela 1: Setup -->
+    <div id="setup-screen" class="screen active">
+        <div class="container">
+            <h1 class="game-title">É Top?</h1>
+            <p class="subtitle">Jogo de Trivia e Apostas</p>
+
+            <div class="setup-content">
+                <div class="players-input">
+                    <h2>Adicionar Jogadores (2-10)</h2>
+                    <div id="player-inputs">
+                        <input type="text" class="player-name-input" placeholder="Jogador 1" maxlength="20">
+                        <input type="text" class="player-name-input" placeholder="Jogador 2" maxlength="20">
+                    </div>
+                    <button id="add-player-btn" class="btn btn-secondary">+ Adicionar Jogador</button>
+                </div>
+
+                <div class="deck-selection">
+                    <h2>Selecionar Tema</h2>
+                    <select id="deck-select" class="deck-select">
+                        <option value="0">Conhecimento Geral</option>
+                    </select>
+                </div>
+
+                <button id="start-game-btn" class="btn btn-primary">Iniciar Jogo</button>
+                <p id="setup-error" class="error-message"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tela 2: Game Board -->
+    <div id="game-screen" class="screen">
+        <div class="game-container">
+            <header class="game-header">
+                <h2 id="current-category" class="category-text">Categoria da Pergunta</h2>
+                <div class="round-info">
+                    <span id="round-number">Rodada 1</span>
+                </div>
+            </header>
+
+            <div class="game-content">
+                <!-- Top 10 List -->
+                <div class="top10-container">
+                    <h3>Top 10</h3>
+                    <ol id="top10-list" class="top10-list">
+                        <li class="top10-item hidden"><span class="item-number">1</span><span class="item-text">???</span></li>
+                        <li class="top10-item hidden"><span class="item-number">2</span><span class="item-text">???</span></li>
+                        <li class="top10-item hidden"><span class="item-number">3</span><span class="item-text">???</span></li>
+                        <li class="top10-item hidden"><span class="item-number">4</span><span class="item-text">???</span></li>
+                        <li class="top10-item hidden"><span class="item-number">5</span><span class="item-text">???</span></li>
+                        <li class="top10-item hidden"><span class="item-number">6</span><span class="item-text">???</span></li>
+                        <li class="top10-item hidden"><span class="item-number">7</span><span class="item-text">???</span></li>
+                        <li class="top10-item hidden"><span class="item-number">8</span><span class="item-text">???</span></li>
+                        <li class="top10-item hidden"><span class="item-number">9</span><span class="item-text">???</span></li>
+                        <li class="top10-item hidden"><span class="item-number">10</span><span class="item-text">???</span></li>
+                    </ol>
+                </div>
+
+                <!-- Players Area -->
+                <div id="players-area" class="players-area">
+                    <!-- Players will be dynamically added here -->
+                </div>
+
+                <!-- Action Center -->
+                <div class="action-center">
+                    <div id="current-player-display" class="current-player-display">
+                        Vez de: <span id="current-player-name">Jogador</span>
+                    </div>
+
+                    <div id="guess-input-area" class="guess-input-area hidden">
+                        <input type="text" id="guess-input" placeholder="Digite sua resposta..." maxlength="50">
+                        <button id="submit-guess-btn" class="btn btn-primary">Confirmar</button>
+                        <button id="cancel-guess-btn" class="btn btn-secondary">Cancelar</button>
+                    </div>
+
+                    <div id="action-buttons" class="action-buttons">
+                        <button id="guess-btn" class="btn btn-primary">Adivinhar</button>
+                        <button id="pass-btn" class="btn btn-warning">Passar</button>
+                    </div>
+
+                    <div id="challenge-area" class="challenge-area hidden">
+                        <p class="challenge-text">
+                            <strong id="guesser-name">Jogador</strong> apostou em:
+                            <strong id="current-guess">Resposta</strong>
+                        </p>
+                        <button id="challenge-btn" class="btn btn-danger">Desafiar!</button>
+                        <button id="accept-btn" class="btn btn-success">Aceitar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tela 3: Reveal Modal -->
+    <div id="reveal-modal" class="modal">
+        <div class="modal-content reveal-content">
+            <h2>Revelação!</h2>
+            <div id="reveal-result" class="reveal-result">
+                <p class="guess-text">Resposta: <strong id="revealed-guess">Item</strong></p>
+                <p class="result-text" id="result-text">É TOP!</p>
+            </div>
+
+            <div class="top10-reveal">
+                <h3>Top 10 Completo</h3>
+                <ol id="reveal-list" class="reveal-list">
+                    <!-- Will be populated dynamically -->
+                </ol>
+            </div>
+
+            <div id="round-outcome" class="round-outcome">
+                <!-- Outcome message will be inserted here -->
+            </div>
+
+            <button id="continue-btn" class="btn btn-primary">Continuar</button>
+        </div>
+    </div>
+
+    <!-- Tela 4: Game Over -->
+    <div id="gameover-screen" class="screen">
+        <div class="container">
+            <h1 class="game-title">Fim de Jogo!</h1>
+
+            <div id="winner-display" class="winner-display">
+                <!-- Winner info will be inserted here -->
+            </div>
+
+            <div class="final-scores">
+                <h2>Placar Final</h2>
+                <div id="final-scores-list">
+                    <!-- Scores will be inserted here -->
+                </div>
+            </div>
+
+            <button id="play-again-btn" class="btn btn-primary">Jogar Novamente</button>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>

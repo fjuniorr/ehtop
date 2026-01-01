@@ -1,0 +1,89 @@
+{
+  "decks": [
+    {
+      "theme": "Conhecimento Geral",
+      "questions": [
+        {
+          "id": 1,
+          "category": "Especialidades de engenharia com mais graduados nos EUA",
+          "top10": [
+            "Mecânica",
+            "Civil",
+            "Elétrica",
+            "Química",
+            "Computação",
+            "Industrial",
+            "Aeroespacial",
+            "Biomédica",
+            "Engenharia Geral",
+            "Ambiental"
+          ]
+        },
+        {
+          "id": 2,
+          "category": "Animais terrestres mais altos",
+          "top10": [
+            "Girafa",
+            "Elefante Africano",
+            "Elefante Asiático",
+            "Rinoceronte Branco",
+            "Hipopótamo",
+            "Avestruz",
+            "Camelo",
+            "Urso Pardo",
+            "Alce",
+            "Bisão"
+          ]
+        },
+        {
+          "id": 3,
+          "category": "Atores de cinema que mais 'mataram' pessoas na tela",
+          "top10": [
+            "Arnold Schwarzenegger",
+            "Dolph Lundgren",
+            "Sylvester Stallone",
+            "Jet Li",
+            "Chow Yun-Fat",
+            "Steven Seagal",
+            "Toshiro Mifune",
+            "Charles Bronson",
+            "Bruce Willis",
+            "James Bond"
+          ]
+        },
+        {
+          "id": 4,
+          "category": "Jogos de tabuleiro mais vendidos da história",
+          "top10": [
+            "Xadrez",
+            "Damas",
+            "Gamão",
+            "Banco Imobiliário",
+            "Scrabble",
+            "Detetive",
+            "Batalha Naval",
+            "Trivial Pursuit",
+            "War",
+            "Jogo da Vida"
+          ]
+        },
+        {
+          "id": 5,
+          "category": "Países mais populosos do mundo",
+          "top10": [
+            "Índia",
+            "China",
+            "Estados Unidos",
+            "Indonésia",
+            "Paquistão",
+            "Nigéria",
+            "Brasil",
+            "Bangladesh",
+            "Rússia",
+            "Etiópia"
+          ]
+        }
+      ]
+    }
+  ]
+}
