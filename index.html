@@ -63,13 +63,6 @@
                         <li class="top10-item hidden"><span class="item-number">10</span><span class="item-text">???</span></li>
                     </ol>
 
-                    <!-- Guesses History -->
-                    <div id="guesses-history" class="guesses-history">
-                        <h4>Palpites da Rodada</h4>
-                        <div id="guesses-list" class="guesses-list">
-                            <p class="no-guesses">Nenhum palpite ainda</p>
-                        </div>
-                    </div>
                 </div>
 
                 <!-- Players Area -->
@@ -114,6 +107,11 @@
                             <strong id="guesser-name">Jogador</strong> apostou em:
                             <strong id="current-guess">Resposta</strong>
                         </p>
+                        <div class="challenge-select">
+                            <label for="challenger-select">Quem desafiou?</label>
+                            <select id="challenger-select" class="challenger-select"></select>
+                            <p id="challenger-error" class="guess-error hidden"></p>
+                        </div>
                         <button id="challenge-btn" class="btn btn-danger">Desafiar!</button>
                         <button id="accept-btn" class="btn btn-success">Aceitar</button>
                     </div>
