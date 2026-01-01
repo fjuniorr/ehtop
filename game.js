@@ -9,6 +9,7 @@ let gameState = {
     currentGuess: null,
     currentGuesser: null,
     playersInRound: [],
+    guesses: [], // Track all guesses in the round: { playerId, playerName, guess, isCorrect }
     gameData: null,
     selectedDeckIndex: 0
 };
@@ -161,6 +162,7 @@ function startNewRound() {
     gameState.revealedItems = [];
     gameState.currentGuess = null;
     gameState.currentGuesser = null;
+    gameState.guesses = []; // Clear guesses for new round
     gameState.playersInRound = gameState.players
         .filter(p => !p.eliminated)
         .map(p => ({ ...p, passed: false }));
@@ -272,8 +274,22 @@ function submitGuess() {
         return;
     }
 
+    const currentPlayer = gameState.players[gameState.currentPlayerIndex];
     gameState.currentGuess = guess;
-    gameState.currentGuesser = gameState.players[gameState.currentPlayerIndex];
+    gameState.currentGuesser = currentPlayer;
+
+    // Check if guess is correct
+    const question = gameState.questions[gameState.currentQuestionIndex];
+    const normalizedGuess = normalizeString(guess);
+    const isCorrect = question.top10.some(item => normalizeString(item) === normalizedGuess);
+
+    // Store guess with player info
+    gameState.guesses.push({
+        playerId: currentPlayer.id,
+        playerName: currentPlayer.name,
+        guess: guess,
+        isCorrect: isCorrect
+    });
 
     hideGuessInput();
     showChallengeArea();
@@ -332,14 +348,12 @@ function handleAccept() {
             gameState.revealedItems.push(index);
             renderTop10List();
         }
-
-        // Move to next player
-        moveToNextPlayer();
-        checkRoundEnd();
-    } else {
-        // If guess was wrong and no one challenged, guesser loses life
-        showRevealModal(false, false);
     }
+
+    // Continue to next player regardless of whether guess was correct or not
+    // No penalty when there's no challenge, even if guess was wrong
+    moveToNextPlayer();
+    checkRoundEnd();
 }
 
 // Show reveal modal
@@ -375,11 +389,9 @@ function showRevealModal(isCorrect, wasChallenged) {
             // Guess was incorrect, guesser loses life, challenger wins card
             outcomeHTML = `<strong>${gameState.currentGuesser.name}</strong> estava errado! Perde 1 vida e o desafiante ganha 1 carta!`;
         }
-    } else {
-        if (!isCorrect) {
-            outcomeHTML = `<strong>${gameState.currentGuesser.name}</strong> estava errado e ninguém desafiou! Perde 1 vida.`;
-        }
     }
+    // Note: No outcome message when not challenged - this should not happen now
+    // as handleAccept() no longer calls showRevealModal for incorrect guesses
 
     roundOutcome.innerHTML = outcomeHTML;
 
@@ -398,6 +410,7 @@ function continueGame() {
 
     revealModal.classList.remove('active');
 
+    // Only process challenge outcomes (since handleAccept handles non-challenge cases)
     if (wasChallenged) {
         if (isCorrect) {
             // Challenger loses life - we need to ask who challenged
@@ -447,26 +460,6 @@ function continueGame() {
             // End round, challenger won
             endRound(challengerIndex);
             return;
-        }
-    } else {
-        if (!isCorrect) {
-            // No challenge, guesser was wrong
-            loseLife(gameState.currentGuesser);
-
-            const guesserInRound = gameState.playersInRound.find(
-                p => p.id === gameState.currentGuesser.id
-            );
-            if (guesserInRound) {
-                guesserInRound.passed = true;
-            }
-        } else {
-            // Correct guess, no challenge, reveal item
-            const index = question.top10.findIndex(item =>
-                normalizeString(item) === normalizeString(gameState.currentGuess)
-            );
-            if (index !== -1 && !gameState.revealedItems.includes(index)) {
-                gameState.revealedItems.push(index);
-            }
         }
     }
 
@@ -628,6 +621,7 @@ function resetGame() {
         currentGuess: null,
         currentGuesser: null,
         playersInRound: [],
+        guesses: [],
         gameData: gameState.gameData,
         selectedDeckIndex: 0
     };
