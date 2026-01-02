@@ -162,7 +162,52 @@ h2 {
     margin-bottom: 15px;
 }
 
+.hint-text {
+    text-align: center;
+    color: #999;
+    font-size: 0.85rem;
+    margin-bottom: 10px;
+    margin-top: -5px;
+}
+
+.player-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px;
+    border-radius: 6px;
+    transition: all 0.2s;
+    cursor: move;
+}
+
+.player-input-wrapper:hover {
+    background: #f9f9f9;
+}
+
+.player-input-wrapper.dragging {
+    opacity: 0.5;
+    background: #e8e8e8;
+}
+
+.player-input-wrapper.drag-over {
+    background: #f0f0f0;
+    border: 2px dashed #1a1a1a;
+}
+
+.drag-handle {
+    color: #999;
+    font-size: 1.2rem;
+    cursor: grab;
+    user-select: none;
+    padding: 4px;
+}
+
+.drag-handle:active {
+    cursor: grabbing;
+}
+
 .player-name-input {
+    flex: 1;
     padding: 12px;
     border: 1px solid #d0d0d0;
     border-radius: 6px;

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>É Top? v0.0.0.9005</title>
+    <title>É Top? v0.0.0.9006</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -16,9 +16,16 @@
             <div class="setup-content">
                 <div class="players-input">
                     <h2>Adicionar Jogadores (2-10)</h2>
+                    <p class="hint-text">Arraste para reordenar</p>
                     <div id="player-inputs">
-                        <input type="text" class="player-name-input" placeholder="Jogador 1" maxlength="20">
-                        <input type="text" class="player-name-input" placeholder="Jogador 2" maxlength="20">
+                        <div class="player-input-wrapper" draggable="true">
+                            <span class="drag-handle">☰</span>
+                            <input type="text" class="player-name-input" placeholder="Jogador 1" maxlength="20">
+                        </div>
+                        <div class="player-input-wrapper" draggable="true">
+                            <span class="drag-handle">☰</span>
+                            <input type="text" class="player-name-input" placeholder="Jogador 2" maxlength="20">
+                        </div>
                     </div>
                     <button id="add-player-btn" class="btn btn-secondary">+ Adicionar Jogador</button>
                 </div>

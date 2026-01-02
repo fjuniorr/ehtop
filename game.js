@@ -142,7 +142,16 @@ const guessHistoryList = document.getElementById('guess-history-list');
 document.addEventListener('DOMContentLoaded', () => {
     loadGameData();
     setupEventListeners();
+    initializeDragAndDrop();
 });
+
+// Initialize drag and drop for initial player inputs
+function initializeDragAndDrop() {
+    const initialWrappers = playerInputsContainer.querySelectorAll('.player-input-wrapper');
+    initialWrappers.forEach(wrapper => {
+        setupDragAndDrop(wrapper);
+    });
+}
 
 // Load game data from JSON
 async function loadGameData() {
@@ -195,13 +204,92 @@ function addPlayerInput() {
         return;
     }
 
+    const wrapper = document.createElement('div');
+    wrapper.className = 'player-input-wrapper';
+    wrapper.draggable = true;
+
+    const dragHandle = document.createElement('span');
+    dragHandle.className = 'drag-handle';
+    dragHandle.textContent = '☰';
+
     const input = document.createElement('input');
     input.type = 'text';
     input.className = 'player-name-input';
     input.placeholder = `Jogador ${playerInputs.length + 1}`;
     input.maxLength = 20;
-    playerInputsContainer.appendChild(input);
+
+    wrapper.appendChild(dragHandle);
+    wrapper.appendChild(input);
+    playerInputsContainer.appendChild(wrapper);
+
+    setupDragAndDrop(wrapper);
     setupError.textContent = '';
+}
+
+// Setup drag and drop for player inputs
+function setupDragAndDrop(wrapper) {
+    wrapper.addEventListener('dragstart', handleDragStart);
+    wrapper.addEventListener('dragover', handleDragOver);
+    wrapper.addEventListener('drop', handleDrop);
+    wrapper.addEventListener('dragend', handleDragEnd);
+    wrapper.addEventListener('dragenter', handleDragEnter);
+    wrapper.addEventListener('dragleave', handleDragLeave);
+}
+
+let draggedElement = null;
+
+function handleDragStart(e) {
+    draggedElement = this;
+    this.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/html', this.innerHTML);
+}
+
+function handleDragOver(e) {
+    if (e.preventDefault) {
+        e.preventDefault();
+    }
+    e.dataTransfer.dropEffect = 'move';
+    return false;
+}
+
+function handleDragEnter(e) {
+    if (this !== draggedElement) {
+        this.classList.add('drag-over');
+    }
+}
+
+function handleDragLeave(e) {
+    this.classList.remove('drag-over');
+}
+
+function handleDrop(e) {
+    if (e.stopPropagation) {
+        e.stopPropagation();
+    }
+
+    if (draggedElement !== this) {
+        const allWrappers = Array.from(playerInputsContainer.querySelectorAll('.player-input-wrapper'));
+        const draggedIndex = allWrappers.indexOf(draggedElement);
+        const targetIndex = allWrappers.indexOf(this);
+
+        if (draggedIndex < targetIndex) {
+            this.parentNode.insertBefore(draggedElement, this.nextSibling);
+        } else {
+            this.parentNode.insertBefore(draggedElement, this);
+        }
+    }
+
+    this.classList.remove('drag-over');
+    return false;
+}
+
+function handleDragEnd(e) {
+    this.classList.remove('dragging');
+    const allWrappers = playerInputsContainer.querySelectorAll('.player-input-wrapper');
+    allWrappers.forEach(wrapper => {
+        wrapper.classList.remove('drag-over');
+    });
 }
 
 // Start game
@@ -219,7 +307,7 @@ function startGame() {
     gameState.selectedDeckIndex = parseInt(deckSelect.value);
     gameState.questions = shuffleArray([...gameState.gameData.decks[gameState.selectedDeckIndex].questions]);
 
-    // Initialize players
+    // Initialize players (order determined by input field order)
     const initializedPlayers = playerNames.map((name, index) => ({
         id: index,
         name: name,
@@ -228,8 +316,7 @@ function startGame() {
         eliminated: false
     }));
 
-    // Shuffle players so turn order is randomized
-    gameState.players = shuffleArray(initializedPlayers);
+    gameState.players = initializedPlayers;
 
     gameState.currentPlayerIndex = 0;
     gameState.currentQuestionIndex = 0;
