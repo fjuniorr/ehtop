@@ -112,19 +112,19 @@ h2 {
 }
 
 .btn-warning:hover {
-    background: #fff8f0;
-    border-color: #ffb74d;
+    background: #f9f9f9;
+    border-color: #1a1a1a;
 }
 
 .btn-danger {
-    background: #dc3545;
-    color: white;
-    border-color: #dc3545;
+    background: white;
+    color: #1a1a1a;
+    border-color: #d0d0d0;
 }
 
 .btn-danger:hover {
-    background: #c82333;
-    border-color: #c82333;
+    background: #f9f9f9;
+    border-color: #1a1a1a;
 }
 
 .btn-success {
