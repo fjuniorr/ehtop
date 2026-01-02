@@ -101,7 +101,6 @@ const deckSelect = document.getElementById('deck-select');
 // Game elements
 const currentCategory = document.getElementById('current-category');
 const roundNumber = document.getElementById('round-number');
-const top10List = document.getElementById('top10-list');
 const playersArea = document.getElementById('players-area');
 const currentPlayerDisplay = document.getElementById('current-player-name');
 const turnTimerElement = document.getElementById('turn-timer');
@@ -123,6 +122,7 @@ const challengerSelect = document.getElementById('challenger-select');
 const challengerError = document.getElementById('challenger-error');
 const challengeBtn = document.getElementById('challenge-btn');
 const acceptBtn = document.getElementById('accept-btn');
+const skipQuestionBtn = document.getElementById('skip-question-btn');
 
 // Reveal modal elements
 const revealedGuess = document.getElementById('revealed-guess');
@@ -142,7 +142,16 @@ const guessHistoryList = document.getElementById('guess-history-list');
 document.addEventListener('DOMContentLoaded', () => {
     loadGameData();
     setupEventListeners();
+    initializeDragAndDrop();
 });
+
+// Initialize drag and drop for initial player inputs
+function initializeDragAndDrop() {
+    const initialWrappers = playerInputsContainer.querySelectorAll('.player-input-wrapper');
+    initialWrappers.forEach(wrapper => {
+        setupDragAndDrop(wrapper);
+    });
+}
 
 // Load game data from JSON
 async function loadGameData() {
@@ -179,6 +188,7 @@ function setupEventListeners() {
     acceptBtn.addEventListener('click', handleAccept);
     continueBtn.addEventListener('click', continueGame);
     playAgainBtn.addEventListener('click', resetGame);
+    skipQuestionBtn.addEventListener('click', handleSkipQuestion);
     challengerSelect.addEventListener('change', () => {
         if (challengerSelect.value) {
             challengerError.classList.add('hidden');
@@ -195,13 +205,92 @@ function addPlayerInput() {
         return;
     }
 
+    const wrapper = document.createElement('div');
+    wrapper.className = 'player-input-wrapper';
+    wrapper.draggable = true;
+
+    const dragHandle = document.createElement('span');
+    dragHandle.className = 'drag-handle';
+    dragHandle.textContent = '☰';
+
     const input = document.createElement('input');
     input.type = 'text';
     input.className = 'player-name-input';
     input.placeholder = `Jogador ${playerInputs.length + 1}`;
     input.maxLength = 20;
-    playerInputsContainer.appendChild(input);
+
+    wrapper.appendChild(dragHandle);
+    wrapper.appendChild(input);
+    playerInputsContainer.appendChild(wrapper);
+
+    setupDragAndDrop(wrapper);
     setupError.textContent = '';
+}
+
+// Setup drag and drop for player inputs
+function setupDragAndDrop(wrapper) {
+    wrapper.addEventListener('dragstart', handleDragStart);
+    wrapper.addEventListener('dragover', handleDragOver);
+    wrapper.addEventListener('drop', handleDrop);
+    wrapper.addEventListener('dragend', handleDragEnd);
+    wrapper.addEventListener('dragenter', handleDragEnter);
+    wrapper.addEventListener('dragleave', handleDragLeave);
+}
+
+let draggedElement = null;
+
+function handleDragStart(e) {
+    draggedElement = this;
+    this.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/html', this.innerHTML);
+}
+
+function handleDragOver(e) {
+    if (e.preventDefault) {
+        e.preventDefault();
+    }
+    e.dataTransfer.dropEffect = 'move';
+    return false;
+}
+
+function handleDragEnter(e) {
+    if (this !== draggedElement) {
+        this.classList.add('drag-over');
+    }
+}
+
+function handleDragLeave(e) {
+    this.classList.remove('drag-over');
+}
+
+function handleDrop(e) {
+    if (e.stopPropagation) {
+        e.stopPropagation();
+    }
+
+    if (draggedElement !== this) {
+        const allWrappers = Array.from(playerInputsContainer.querySelectorAll('.player-input-wrapper'));
+        const draggedIndex = allWrappers.indexOf(draggedElement);
+        const targetIndex = allWrappers.indexOf(this);
+
+        if (draggedIndex < targetIndex) {
+            this.parentNode.insertBefore(draggedElement, this.nextSibling);
+        } else {
+            this.parentNode.insertBefore(draggedElement, this);
+        }
+    }
+
+    this.classList.remove('drag-over');
+    return false;
+}
+
+function handleDragEnd(e) {
+    this.classList.remove('dragging');
+    const allWrappers = playerInputsContainer.querySelectorAll('.player-input-wrapper');
+    allWrappers.forEach(wrapper => {
+        wrapper.classList.remove('drag-over');
+    });
 }
 
 // Start game
@@ -219,7 +308,7 @@ function startGame() {
     gameState.selectedDeckIndex = parseInt(deckSelect.value);
     gameState.questions = shuffleArray([...gameState.gameData.decks[gameState.selectedDeckIndex].questions]);
 
-    // Initialize players
+    // Initialize players (order determined by input field order)
     const initializedPlayers = playerNames.map((name, index) => ({
         id: index,
         name: name,
@@ -228,8 +317,7 @@ function startGame() {
         eliminated: false
     }));
 
-    // Shuffle players so turn order is randomized
-    gameState.players = shuffleArray(initializedPlayers);
+    gameState.players = initializedPlayers;
 
     gameState.currentPlayerIndex = 0;
     gameState.currentQuestionIndex = 0;
@@ -270,25 +358,12 @@ function startNewRound() {
     stopTurnTimer();
     stopChallengeTimer();
 
-    renderTop10List();
     renderPlayers();
     updateCurrentPlayerDisplay();
     hideGuessInput();
     hideChallengeArea();
     showActionButtons();
     renderGuessHistory();
-}
-
-// Render Top 10 list
-function renderTop10List() {
-    const items = top10List.querySelectorAll('.top10-item');
-    items.forEach((item, index) => {
-        const textSpan = item.querySelector('.item-text');
-
-        textSpan.textContent = '???';
-        item.classList.remove('revealed');
-        item.classList.add('hidden');
-    });
 }
 
 // Render players
@@ -535,6 +610,20 @@ function handleAccept() {
     checkRoundEnd();
 }
 
+// Handle skip question
+function handleSkipQuestion() {
+    // Stop any running timers
+    stopTurnTimer();
+    stopChallengeTimer();
+
+    // Hide any active input areas
+    hideGuessInput();
+    hideChallengeArea();
+
+    // Skip to next round without awarding cards
+    endRound(null);
+}
+
 // Show reveal modal
 function showRevealModal(isCorrect, wasChallenged) {
     const question = gameState.questions[gameState.currentQuestionIndex];
@@ -592,7 +681,6 @@ function continueGame() {
     if (wasChallenged) {
         const challenger = gameState.currentChallenger;
         if (!challenger) {
-            renderTop10List();
             renderPlayers();
             moveToNextPlayer();
             checkRoundEnd();
@@ -634,7 +722,6 @@ function continueGame() {
         }
     }
 
-    renderTop10List();
     renderPlayers();
     moveToNextPlayer();
     checkRoundEnd();

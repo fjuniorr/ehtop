@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>É Top? v0.0.0.9003</title>
+    <title>É Top? v0.0.0.9008</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -16,9 +16,16 @@
             <div class="setup-content">
                 <div class="players-input">
                     <h2>Adicionar Jogadores (2-10)</h2>
+                    <p class="hint-text">Arraste para reordenar</p>
                     <div id="player-inputs">
-                        <input type="text" class="player-name-input" placeholder="Jogador 1" maxlength="20">
-                        <input type="text" class="player-name-input" placeholder="Jogador 2" maxlength="20">
+                        <div class="player-input-wrapper" draggable="true">
+                            <span class="drag-handle">☰</span>
+                            <input type="text" class="player-name-input" placeholder="Jogador 1" maxlength="20">
+                        </div>
+                        <div class="player-input-wrapper" draggable="true">
+                            <span class="drag-handle">☰</span>
+                            <input type="text" class="player-name-input" placeholder="Jogador 2" maxlength="20">
+                        </div>
                     </div>
                     <button id="add-player-btn" class="btn btn-secondary">+ Adicionar Jogador</button>
                 </div>
@@ -41,30 +48,15 @@
         <div class="game-container">
             <header class="game-header">
                 <h2 id="current-category" class="category-text">Categoria da Pergunta</h2>
-                <div class="round-info">
-                    <span id="round-number">Rodada 1</span>
+                <div class="header-actions">
+                    <div class="round-info">
+                        <span id="round-number">Rodada 1</span>
+                    </div>
+                    <button id="skip-question-btn" class="btn btn-secondary skip-btn" title="Pular esta pergunta">⏩ Pular pergunta</button>
                 </div>
             </header>
 
             <div class="game-content">
-                <!-- Top 10 List -->
-                <div class="top10-container">
-                    <h3>Top 10</h3>
-                    <ol id="top10-list" class="top10-list">
-                        <li class="top10-item hidden"><span class="item-number">1</span><span class="item-text">???</span></li>
-                        <li class="top10-item hidden"><span class="item-number">2</span><span class="item-text">???</span></li>
-                        <li class="top10-item hidden"><span class="item-number">3</span><span class="item-text">???</span></li>
-                        <li class="top10-item hidden"><span class="item-number">4</span><span class="item-text">???</span></li>
-                        <li class="top10-item hidden"><span class="item-number">5</span><span class="item-text">???</span></li>
-                        <li class="top10-item hidden"><span class="item-number">6</span><span class="item-text">???</span></li>
-                        <li class="top10-item hidden"><span class="item-number">7</span><span class="item-text">???</span></li>
-                        <li class="top10-item hidden"><span class="item-number">8</span><span class="item-text">???</span></li>
-                        <li class="top10-item hidden"><span class="item-number">9</span><span class="item-text">???</span></li>
-                        <li class="top10-item hidden"><span class="item-number">10</span><span class="item-text">???</span></li>
-                    </ol>
-
-                </div>
-
                 <!-- Players Area -->
                 <div id="players-area" class="players-area">
                     <!-- Players will be dynamically added here -->
@@ -103,8 +95,8 @@
                     </div>
 
                     <div id="action-buttons" class="action-buttons">
-                        <button id="guess-btn" class="btn btn-primary">🎯 Adivinhar</button>
-                        <button id="pass-btn" class="btn btn-warning">⏭️ Passar</button>
+                        <button id="guess-btn" class="btn btn-primary">🎯 Dar palpite</button>
+                        <button id="pass-btn" class="btn btn-warning">⏭️ Passar a vez</button>
                     </div>
 
                     <div id="challenge-area" class="challenge-area hidden">
@@ -117,8 +109,8 @@
                             <select id="challenger-select" class="challenger-select"></select>
                             <p id="challenger-error" class="guess-error hidden"></p>
                         </div>
-                        <button id="challenge-btn" class="btn btn-danger">Desafiar!</button>
-                        <button id="accept-btn" class="btn btn-success">Aceitar</button>
+                        <button id="challenge-btn" class="btn btn-danger">❌ Duvido</button>
+                        <button id="accept-btn" class="btn btn-success">✅ Segue o jogo</button>
                     </div>
                 </div>
 

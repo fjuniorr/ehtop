@@ -112,19 +112,19 @@ h2 {
 }
 
 .btn-warning:hover {
-    background: #fff8f0;
-    border-color: #ffb74d;
+    background: #f9f9f9;
+    border-color: #1a1a1a;
 }
 
 .btn-danger {
-    background: #dc3545;
-    color: white;
-    border-color: #dc3545;
+    background: white;
+    color: #1a1a1a;
+    border-color: #d0d0d0;
 }
 
 .btn-danger:hover {
-    background: #c82333;
-    border-color: #c82333;
+    background: #f9f9f9;
+    border-color: #1a1a1a;
 }
 
 .btn-success {
@@ -162,7 +162,52 @@ h2 {
     margin-bottom: 15px;
 }
 
+.hint-text {
+    text-align: center;
+    color: #999;
+    font-size: 0.85rem;
+    margin-bottom: 10px;
+    margin-top: -5px;
+}
+
+.player-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px;
+    border-radius: 6px;
+    transition: all 0.2s;
+    cursor: move;
+}
+
+.player-input-wrapper:hover {
+    background: #f9f9f9;
+}
+
+.player-input-wrapper.dragging {
+    opacity: 0.5;
+    background: #e8e8e8;
+}
+
+.player-input-wrapper.drag-over {
+    background: #f0f0f0;
+    border: 2px dashed #1a1a1a;
+}
+
+.drag-handle {
+    color: #999;
+    font-size: 1.2rem;
+    cursor: grab;
+    user-select: none;
+    padding: 4px;
+}
+
+.drag-handle:active {
+    cursor: grabbing;
+}
+
 .player-name-input {
+    flex: 1;
     padding: 12px;
     border: 1px solid #d0d0d0;
     border-radius: 6px;
@@ -226,6 +271,14 @@ h2 {
     font-weight: 600;
 }
 
+.header-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
 .round-info {
     display: inline-block;
     padding: 8px 18px;
@@ -240,63 +293,25 @@ h2 {
     font-size: 1.1rem;
 }
 
+.skip-btn {
+    padding: 8px 16px;
+    font-size: 0.85rem;
+    background: white;
+    color: #666;
+    border: 1px solid #d0d0d0;
+    white-space: nowrap;
+}
+
+.skip-btn:hover {
+    background: #f9f9f9;
+    border-color: #999;
+    color: #1a1a1a;
+}
+
 .game-content {
     display: grid;
-    grid-template-columns: 1fr 2fr;
+    grid-template-columns: 1fr;
     gap: 20px;
-}
-
-/* Top 10 List */
-.top10-container {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    border: 1px solid #e0e0e0;
-}
-
-.top10-container h3 {
-    text-align: center;
-    color: #1a1a1a;
-    margin-bottom: 15px;
-    font-size: 1.1rem;
-    font-weight: 600;
-}
-
-.top10-list {
-    list-style: none;
-    padding: 0;
-}
-
-.top10-item {
-    display: flex;
-    align-items: center;
-    padding: 12px;
-    margin-bottom: 6px;
-    background: #fafafa;
-    border-radius: 6px;
-    border: 1px solid #e8e8e8;
-    transition: all 0.2s ease;
-}
-
-.top10-item.revealed {
-    background: #1a1a1a;
-    color: white;
-    border-color: #1a1a1a;
-}
-
-.top10-item.hidden .item-text {
-    color: #aaa;
-}
-
-.item-number {
-    font-weight: bold;
-    margin-right: 10px;
-    min-width: 30px;
-}
-
-.item-text {
-    flex: 1;
 }
 
 /* Guess History */
@@ -738,12 +753,8 @@ h2 {
         grid-template-columns: 1fr;
     }
 
-    .top10-container {
-        order: 1;
-    }
-
     .players-area {
-        order: 3;
+        order: 1;
         grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
         max-height: 170px;
         overflow-y: auto;
@@ -797,7 +808,7 @@ h2 {
     }
 
     .guess-history {
-        order: 4;
+        order: 3;
     }
 }
 
