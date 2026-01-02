@@ -472,7 +472,6 @@ h2 {
 
 .action-buttons .btn {
     flex: 1;
-    max-width: 200px;
 }
 
 /* Guess Waiting Area */
@@ -502,11 +501,13 @@ h2 {
 }
 
 .challenge-area {
-    text-align: center;
+    display: flex;
+    gap: 15px;
+    justify-content: center;
 }
 
 .challenge-area .btn {
-    margin: 0 10px;
+    flex: 1;
 }
 
 /* Challenger Selection Area */
@@ -546,6 +547,12 @@ h2 {
 .challenger-select:focus {
     outline: none;
     border-color: #1a1a1a;
+}
+
+#confirm-challenger-btn {
+    width: 100%;
+    padding: 16px;
+    font-size: 1.1rem;
 }
 
 /* Verification Area */
