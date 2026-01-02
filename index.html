@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>É Top? v0.0.0.9008</title>
+    <title>É Top? v0.0.0.9009</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -85,13 +85,8 @@
                         </div>
                     </div>
 
-                    <div id="guess-input-area" class="guess-input-area hidden">
-                        <input type="text" id="guess-input" placeholder="Digite sua resposta..." maxlength="50">
-                        <p id="guess-error" class="guess-error hidden"></p>
-                        <div class="guess-buttons">
-                            <button id="submit-guess-btn" class="btn btn-primary">Confirmar</button>
-                            <button id="cancel-guess-btn" class="btn btn-secondary">Cancelar</button>
-                        </div>
+                    <div id="guess-waiting-area" class="guess-waiting-area hidden">
+                        <p id="guess-waiting-text" class="guess-waiting-text"></p>
                     </div>
 
                     <div id="action-buttons" class="action-buttons">
@@ -100,23 +95,29 @@
                     </div>
 
                     <div id="challenge-area" class="challenge-area hidden">
-                        <p class="challenge-text">
-                            <strong id="guesser-name">Jogador</strong> apostou em:
-                            <strong id="current-guess">Resposta</strong>
-                        </p>
+                        <button id="challenge-btn" class="btn btn-danger">❌ Duvido</button>
+                        <button id="accept-btn" class="btn btn-success">✅ Segue o jogo</button>
+                    </div>
+
+                    <div id="challenger-selection-area" class="challenger-selection-area hidden">
                         <div class="challenge-select">
                             <label for="challenger-select">Quem desafiou?</label>
                             <select id="challenger-select" class="challenger-select"></select>
                             <p id="challenger-error" class="guess-error hidden"></p>
                         </div>
-                        <button id="challenge-btn" class="btn btn-danger">❌ Duvido</button>
-                        <button id="accept-btn" class="btn btn-success">✅ Segue o jogo</button>
+                        <button id="confirm-challenger-btn" class="btn btn-primary">Confirmar</button>
                     </div>
-                </div>
 
-                <div id="guess-history-container" class="guess-history">
-                    <h3>Auditoria de Palpites</h3>
-                    <ul id="guess-history-list" class="guess-history-list"></ul>
+                    <div id="verification-area" class="verification-area hidden">
+                        <h3>Verificar palpite no Top 10</h3>
+                        <p class="verification-instruction">Selecione o item que foi mencionado ou marque "Não é Top!" se não estiver na lista:</p>
+                        <form id="verification-form">
+                            <div id="top10-options" class="top10-options">
+                                <!-- Radio buttons will be populated dynamically -->
+                            </div>
+                            <button type="button" id="confirm-verification-btn" class="btn btn-primary">Confirmar</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -127,7 +128,7 @@
         <div class="modal-content reveal-content">
             <h2>Desafio Resolvido</h2>
             <div id="reveal-result" class="reveal-result">
-                <p class="guess-text">Palpite: <strong id="revealed-guess">Item</strong></p>
+                <p class="guess-text">Jogador: <strong id="revealed-guess">Item</strong></p>
                 <p class="guess-text">Desafiante: <strong id="revealed-challenger">Jogador</strong></p>
                 <p id="result-text" class="result-text">Resultado</p>
             </div>
