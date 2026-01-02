@@ -109,19 +109,19 @@ const challengeTimerElement = document.getElementById('challenge-timer');
 const challengeTimerValue = document.getElementById('challenge-timer-value');
 const guessBtn = document.getElementById('guess-btn');
 const passBtn = document.getElementById('pass-btn');
-const guessInputArea = document.getElementById('guess-input-area');
-const guessInput = document.getElementById('guess-input');
-const guessError = document.getElementById('guess-error');
-const submitGuessBtn = document.getElementById('submit-guess-btn');
-const cancelGuessBtn = document.getElementById('cancel-guess-btn');
+const guessWaitingArea = document.getElementById('guess-waiting-area');
+const guessWaitingText = document.getElementById('guess-waiting-text');
 const actionButtons = document.getElementById('action-buttons');
 const challengeArea = document.getElementById('challenge-area');
-const guesserName = document.getElementById('guesser-name');
-const currentGuessText = document.getElementById('current-guess');
+const challengerSelectionArea = document.getElementById('challenger-selection-area');
 const challengerSelect = document.getElementById('challenger-select');
 const challengerError = document.getElementById('challenger-error');
+const confirmChallengerBtn = document.getElementById('confirm-challenger-btn');
 const challengeBtn = document.getElementById('challenge-btn');
 const acceptBtn = document.getElementById('accept-btn');
+const verificationArea = document.getElementById('verification-area');
+const top10Options = document.getElementById('top10-options');
+const confirmVerificationBtn = document.getElementById('confirm-verification-btn');
 const skipQuestionBtn = document.getElementById('skip-question-btn');
 
 // Reveal modal elements
@@ -136,7 +136,6 @@ const continueBtn = document.getElementById('continue-btn');
 const winnerDisplay = document.getElementById('winner-display');
 const finalScoresList = document.getElementById('final-scores-list');
 const playAgainBtn = document.getElementById('play-again-btn');
-const guessHistoryList = document.getElementById('guess-history-list');
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
@@ -180,12 +179,12 @@ function populateDeckSelect() {
 function setupEventListeners() {
     addPlayerBtn.addEventListener('click', addPlayerInput);
     startGameBtn.addEventListener('click', startGame);
-    guessBtn.addEventListener('click', showGuessInput);
+    guessBtn.addEventListener('click', handleGuess);
     passBtn.addEventListener('click', handlePass);
-    submitGuessBtn.addEventListener('click', submitGuess);
-    cancelGuessBtn.addEventListener('click', hideGuessInput);
-    challengeBtn.addEventListener('click', handleChallenge);
+    challengeBtn.addEventListener('click', showChallengerSelection);
     acceptBtn.addEventListener('click', handleAccept);
+    confirmChallengerBtn.addEventListener('click', handleChallengerConfirm);
+    confirmVerificationBtn.addEventListener('click', handleVerificationConfirm);
     continueBtn.addEventListener('click', continueGame);
     playAgainBtn.addEventListener('click', resetGame);
     skipQuestionBtn.addEventListener('click', handleSkipQuestion);
@@ -327,7 +326,6 @@ function startGame() {
 
     switchScreen(setupScreen, gameScreen);
     startNewRound();
-    renderGuessHistory();
 }
 
 // Start new round
@@ -360,10 +358,11 @@ function startNewRound() {
 
     renderPlayers();
     updateCurrentPlayerDisplay();
-    hideGuessInput();
+    hideGuessWaitingArea();
     hideChallengeArea();
+    hideChallengerSelection();
+    hideVerificationArea();
     showActionButtons();
-    renderGuessHistory();
 }
 
 // Render players
@@ -464,48 +463,30 @@ function stopChallengeTimer() {
     gameState.challengeTimerSeconds = 0;
 }
 
-// Show guess input
-function showGuessInput() {
-    hideActionButtons();
-    guessInputArea.classList.remove('hidden');
-    guessInput.value = '';
-    guessError.classList.add('hidden');
-    guessError.textContent = '';
-    guessInput.focus();
-    // Timer continues while typing
-}
-
-// Hide guess input
-function hideGuessInput() {
-    guessInputArea.classList.add('hidden');
-    guessError.classList.add('hidden');
-    guessError.textContent = '';
-    showActionButtons();
-}
-
-// Submit guess
-function submitGuess() {
-    const guess = guessInput.value.trim();
-
-    if (!guess) {
-        return;
-    }
-
+// Handle guess (verbal, no input)
+function handleGuess() {
     const currentPlayer = gameState.players[gameState.currentPlayerIndex];
-    gameState.currentGuess = guess;
     gameState.currentGuesser = currentPlayer;
     gameState.currentChallenger = null;
     gameState.lastGuessPlayerId = currentPlayer.id;
-    gameState.guessHistory.push({
-        round: gameState.currentRound,
-        playerName: currentPlayer.name,
-        guess: guess
-    });
-    renderGuessHistory();
 
-    hideGuessInput();
+    hideActionButtons();
+    showGuessWaitingArea();
     stopTurnTimer();
     showChallengeArea();
+}
+
+// Show guess waiting area
+function showGuessWaitingArea() {
+    const currentPlayer = gameState.players[gameState.currentPlayerIndex];
+    guessWaitingText.textContent = `${currentPlayer.name} deu um palpite. Aguardando desafio...`;
+    guessWaitingArea.classList.remove('hidden');
+}
+
+// Hide guess waiting area
+function hideGuessWaitingArea() {
+    guessWaitingArea.classList.add('hidden');
+    guessWaitingText.textContent = '';
 }
 
 // Handle pass
@@ -525,11 +506,6 @@ function handlePass() {
 
 // Show challenge area
 function showChallengeArea() {
-    guesserName.textContent = gameState.currentGuesser.name;
-    currentGuessText.textContent = gameState.currentGuess;
-    gameState.currentChallenger = null;
-    populateChallengerSelect();
-
     hideActionButtons();
     challengeArea.classList.remove('hidden');
     startChallengeTimer();
@@ -538,9 +514,70 @@ function showChallengeArea() {
 // Hide challenge area
 function hideChallengeArea() {
     challengeArea.classList.add('hidden');
+    stopChallengeTimer();
+}
+
+// Show challenger selection
+function showChallengerSelection() {
+    populateChallengerSelect();
+    hideChallengeArea();
+    challengerSelectionArea.classList.remove('hidden');
+}
+
+// Hide challenger selection
+function hideChallengerSelection() {
+    challengerSelectionArea.classList.add('hidden');
     challengerError.classList.add('hidden');
     challengerError.textContent = '';
-    stopChallengeTimer();
+}
+
+// Show verification area
+function showVerificationArea() {
+    const question = gameState.questions[gameState.currentQuestionIndex];
+    top10Options.innerHTML = '';
+
+    // Add radio buttons for each Top 10 item
+    question.top10.forEach((item, index) => {
+        const label = document.createElement('label');
+        label.className = 'top10-option';
+
+        const radio = document.createElement('input');
+        radio.type = 'radio';
+        radio.name = 'top10-verification';
+        radio.value = index;
+        radio.id = `top10-item-${index}`;
+
+        const text = document.createTextNode(` ${index + 1}. ${item}`);
+
+        label.appendChild(radio);
+        label.appendChild(text);
+        top10Options.appendChild(label);
+    });
+
+    // Add "Não é Top!" option
+    const notTopLabel = document.createElement('label');
+    notTopLabel.className = 'top10-option not-top-option';
+
+    const notTopRadio = document.createElement('input');
+    notTopRadio.type = 'radio';
+    notTopRadio.name = 'top10-verification';
+    notTopRadio.value = 'not-top';
+    notTopRadio.id = 'top10-not-top';
+
+    const notTopText = document.createTextNode(' ❌ Não é Top!');
+
+    notTopLabel.appendChild(notTopRadio);
+    notTopLabel.appendChild(notTopText);
+    top10Options.appendChild(notTopLabel);
+
+    hideChallengerSelection();
+    verificationArea.classList.remove('hidden');
+}
+
+// Hide verification area
+function hideVerificationArea() {
+    verificationArea.classList.add('hidden');
+    top10Options.innerHTML = '';
 }
 
 function populateChallengerSelect() {
@@ -572,8 +609,8 @@ function populateChallengerSelect() {
     });
 }
 
-// Handle challenge
-function handleChallenge() {
+// Handle challenger confirmation
+function handleChallengerConfirm() {
     if (challengerSelect.disabled) {
         return;
     }
@@ -592,13 +629,24 @@ function handleChallenge() {
         return;
     }
 
-    const question = gameState.questions[gameState.currentQuestionIndex];
-    const normalizedGuess = normalizeString(gameState.currentGuess);
-    const isCorrect = question.top10.some(item => normalizeString(item) === normalizedGuess);
-
     playChallengeSound();
     stopChallengeTimer();
-    hideChallengeArea();
+    showVerificationArea();
+}
+
+// Handle verification confirmation
+function handleVerificationConfirm() {
+    const selectedOption = document.querySelector('input[name="top10-verification"]:checked');
+
+    if (!selectedOption) {
+        alert('Por favor, selecione uma opção antes de confirmar.');
+        return;
+    }
+
+    const isCorrect = selectedOption.value !== 'not-top';
+
+    hideVerificationArea();
+    hideGuessWaitingArea();
     showRevealModal(isCorrect, true);
 }
 
@@ -606,6 +654,7 @@ function handleChallenge() {
 function handleAccept() {
     stopChallengeTimer();
     hideChallengeArea();
+    hideGuessWaitingArea();
     moveToNextPlayer();
     checkRoundEnd();
 }
@@ -616,9 +665,11 @@ function handleSkipQuestion() {
     stopTurnTimer();
     stopChallengeTimer();
 
-    // Hide any active input areas
-    hideGuessInput();
+    // Hide any active areas
+    hideGuessWaitingArea();
     hideChallengeArea();
+    hideChallengerSelection();
+    hideVerificationArea();
 
     // Skip to next round without awarding cards
     endRound(null);
@@ -628,7 +679,7 @@ function handleSkipQuestion() {
 function showRevealModal(isCorrect, wasChallenged) {
     const question = gameState.questions[gameState.currentQuestionIndex];
 
-    revealedGuess.textContent = gameState.currentGuess;
+    revealedGuess.textContent = gameState.currentGuesser.name;
     revealedChallenger.textContent = gameState.currentChallenger
         ? gameState.currentChallenger.name
         : 'N/A';
@@ -970,21 +1021,4 @@ function shuffleArray(array) {
         [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
     }
     return newArray;
-}
-
-function renderGuessHistory() {
-    guessHistoryList.innerHTML = '';
-
-    if (!gameState.guessHistory.length) {
-        const emptyItem = document.createElement('li');
-        emptyItem.textContent = 'Nenhum palpite ainda.';
-        guessHistoryList.appendChild(emptyItem);
-        return;
-    }
-
-    gameState.guessHistory.forEach(entry => {
-        const li = document.createElement('li');
-        li.textContent = `R${entry.round} · ${entry.playerName}: ${entry.guess}`;
-        guessHistoryList.appendChild(li);
-    });
 }
