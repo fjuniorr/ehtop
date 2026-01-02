@@ -1,10 +1,12 @@
 const CACHE_NAME = 'etop-v1';
+// Get the base path from the service worker location
+const base = self.location.pathname.substring(0, self.location.pathname.lastIndexOf('/') + 1);
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/game.js',
-  '/styles.css',
-  '/questions.json'
+  base,
+  `${base}index.html`,
+  `${base}game.js`,
+  `${base}styles.css`,
+  `${base}questions.json`
 ];
 
 // Install event - cache all static assets
