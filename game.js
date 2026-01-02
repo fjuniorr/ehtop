@@ -123,6 +123,7 @@ const challengerSelect = document.getElementById('challenger-select');
 const challengerError = document.getElementById('challenger-error');
 const challengeBtn = document.getElementById('challenge-btn');
 const acceptBtn = document.getElementById('accept-btn');
+const skipQuestionBtn = document.getElementById('skip-question-btn');
 
 // Reveal modal elements
 const revealedGuess = document.getElementById('revealed-guess');
@@ -188,6 +189,7 @@ function setupEventListeners() {
     acceptBtn.addEventListener('click', handleAccept);
     continueBtn.addEventListener('click', continueGame);
     playAgainBtn.addEventListener('click', resetGame);
+    skipQuestionBtn.addEventListener('click', handleSkipQuestion);
     challengerSelect.addEventListener('change', () => {
         if (challengerSelect.value) {
             challengerError.classList.add('hidden');
@@ -620,6 +622,20 @@ function handleAccept() {
     hideChallengeArea();
     moveToNextPlayer();
     checkRoundEnd();
+}
+
+// Handle skip question
+function handleSkipQuestion() {
+    // Stop any running timers
+    stopTurnTimer();
+    stopChallengeTimer();
+
+    // Hide any active input areas
+    hideGuessInput();
+    hideChallengeArea();
+
+    // Skip to next round without awarding cards
+    endRound(null);
 }
 
 // Show reveal modal
