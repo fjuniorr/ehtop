@@ -310,61 +310,8 @@ h2 {
 
 .game-content {
     display: grid;
-    grid-template-columns: 1fr 2fr;
+    grid-template-columns: 1fr;
     gap: 20px;
-}
-
-/* Top 10 List */
-.top10-container {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    border: 1px solid #e0e0e0;
-}
-
-.top10-container h3 {
-    text-align: center;
-    color: #1a1a1a;
-    margin-bottom: 15px;
-    font-size: 1.1rem;
-    font-weight: 600;
-}
-
-.top10-list {
-    list-style: none;
-    padding: 0;
-}
-
-.top10-item {
-    display: flex;
-    align-items: center;
-    padding: 12px;
-    margin-bottom: 6px;
-    background: #fafafa;
-    border-radius: 6px;
-    border: 1px solid #e8e8e8;
-    transition: all 0.2s ease;
-}
-
-.top10-item.revealed {
-    background: #1a1a1a;
-    color: white;
-    border-color: #1a1a1a;
-}
-
-.top10-item.hidden .item-text {
-    color: #aaa;
-}
-
-.item-number {
-    font-weight: bold;
-    margin-right: 10px;
-    min-width: 30px;
-}
-
-.item-text {
-    flex: 1;
 }
 
 /* Guess History */
@@ -806,12 +753,8 @@ h2 {
         grid-template-columns: 1fr;
     }
 
-    .top10-container {
-        order: 1;
-    }
-
     .players-area {
-        order: 3;
+        order: 1;
         grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
         max-height: 170px;
         overflow-y: auto;
@@ -865,7 +808,7 @@ h2 {
     }
 
     .guess-history {
-        order: 4;
+        order: 3;
     }
 }
 

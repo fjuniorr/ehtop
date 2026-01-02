@@ -101,7 +101,6 @@ const deckSelect = document.getElementById('deck-select');
 // Game elements
 const currentCategory = document.getElementById('current-category');
 const roundNumber = document.getElementById('round-number');
-const top10List = document.getElementById('top10-list');
 const playersArea = document.getElementById('players-area');
 const currentPlayerDisplay = document.getElementById('current-player-name');
 const turnTimerElement = document.getElementById('turn-timer');
@@ -359,25 +358,12 @@ function startNewRound() {
     stopTurnTimer();
     stopChallengeTimer();
 
-    renderTop10List();
     renderPlayers();
     updateCurrentPlayerDisplay();
     hideGuessInput();
     hideChallengeArea();
     showActionButtons();
     renderGuessHistory();
-}
-
-// Render Top 10 list
-function renderTop10List() {
-    const items = top10List.querySelectorAll('.top10-item');
-    items.forEach((item, index) => {
-        const textSpan = item.querySelector('.item-text');
-
-        textSpan.textContent = '???';
-        item.classList.remove('revealed');
-        item.classList.add('hidden');
-    });
 }
 
 // Render players
@@ -695,7 +681,6 @@ function continueGame() {
     if (wasChallenged) {
         const challenger = gameState.currentChallenger;
         if (!challenger) {
-            renderTop10List();
             renderPlayers();
             moveToNextPlayer();
             checkRoundEnd();
@@ -737,7 +722,6 @@ function continueGame() {
         }
     }
 
-    renderTop10List();
     renderPlayers();
     moveToNextPlayer();
     checkRoundEnd();
