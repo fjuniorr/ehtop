@@ -90,6 +90,7 @@ const setupScreen = document.getElementById('setup-screen');
 const gameScreen = document.getElementById('game-screen');
 const revealModal = document.getElementById('reveal-modal');
 const gameoverScreen = document.getElementById('gameover-screen');
+const restartGameBtn = document.getElementById('restart-game-btn');
 
 // Setup elements
 const playerInputsContainer = document.getElementById('player-inputs');
@@ -139,7 +140,36 @@ const playAgainBtn = document.getElementById('play-again-btn');
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
-    loadGameData();
+    loadGameData().then(() => {
+        // Try to restore saved game state
+        const stateLoaded = loadGameState();
+        if (stateLoaded && gameState.players.length > 0) {
+            // Resume the game
+            switchScreen(setupScreen, gameScreen);
+            renderPlayers();
+            updateCurrentPlayerDisplay();
+
+            // Update UI to match saved state
+            const question = gameState.questions[gameState.currentQuestionIndex];
+            if (question) {
+                currentCategory.textContent = question.category;
+                roundNumber.textContent = `Rodada ${gameState.currentRound}`;
+            }
+
+            // Restore timer display if needed
+            if (gameState.turnTimerSeconds > 0) {
+                turnTimerElement.classList.remove('hidden');
+                turnTimerValue.textContent = `${gameState.turnTimerSeconds}s`;
+            }
+            if (gameState.challengeTimerSeconds > 0) {
+                challengeTimerElement.classList.remove('hidden');
+                challengeTimerValue.textContent = `${gameState.challengeTimerSeconds}s`;
+            }
+
+            // Show appropriate action buttons
+            showActionButtons();
+        }
+    });
     setupEventListeners();
     initializeDragAndDrop();
 });
@@ -158,9 +188,11 @@ async function loadGameData() {
         const response = await fetch('questions.json');
         gameState.gameData = await response.json();
         populateDeckSelect();
+        return true;
     } catch (error) {
         console.error('Error loading game data:', error);
         setupError.textContent = 'Erro ao carregar dados do jogo!';
+        return false;
     }
 }
 
@@ -187,6 +219,7 @@ function setupEventListeners() {
     confirmVerificationBtn.addEventListener('click', handleVerificationConfirm);
     continueBtn.addEventListener('click', continueGame);
     playAgainBtn.addEventListener('click', resetGame);
+    restartGameBtn.addEventListener('click', handleRestartGame);
     skipQuestionBtn.addEventListener('click', handleSkipQuestion);
     challengerSelect.addEventListener('change', () => {
         if (challengerSelect.value) {
@@ -326,6 +359,7 @@ function startGame() {
 
     switchScreen(setupScreen, gameScreen);
     startNewRound();
+    saveGameState();
 }
 
 // Start new round
@@ -363,6 +397,7 @@ function startNewRound() {
     hideChallengerSelection();
     hideVerificationArea();
     showActionButtons();
+    saveGameState();
 }
 
 // Render players
@@ -474,6 +509,7 @@ function handleGuess() {
     showGuessWaitingArea();
     stopTurnTimer();
     showChallengeArea();
+    saveGameState();
 }
 
 // Show guess waiting area
@@ -501,6 +537,7 @@ function handlePass() {
     }
 
     renderPlayers();
+    saveGameState();
     checkRoundEnd();
 }
 
@@ -656,6 +693,7 @@ function handleAccept() {
     hideChallengeArea();
     hideGuessWaitingArea();
     moveToNextPlayer();
+    saveGameState();
     checkRoundEnd();
 }
 
@@ -775,6 +813,7 @@ function continueGame() {
 
     renderPlayers();
     moveToNextPlayer();
+    saveGameState();
     checkRoundEnd();
 }
 
@@ -791,11 +830,13 @@ function loseLife(player) {
             endGame(activePlayers[0]);
         }
     }
+    saveGameState();
 }
 
 // Check win condition
 function checkWinCondition(player) {
     if (player.cards >= 4) {
+        saveGameState();
         endGame(player);
         return true;
     }
@@ -878,6 +919,7 @@ function checkRoundEnd() {
         const winner = gameState.players.find(p => p.id === activePlayers[0].id);
         winner.cards++;
         playRoundWinSound();
+        saveGameState();
 
         if (checkWinCondition(winner)) {
             return;
@@ -889,6 +931,7 @@ function checkRoundEnd() {
         const lastGuesser = gameState.players.find(p => p.id === gameState.lastGuessPlayerId);
         if (lastGuesser && !lastGuesser.eliminated) {
             lastGuesser.cards++;
+            saveGameState();
 
             if (checkWinCondition(lastGuesser)) {
                 return;
@@ -971,6 +1014,15 @@ function endGame(winner) {
     });
 }
 
+// Handle restart game with confirmation
+function handleRestartGame() {
+    const confirmed = confirm('Tem certeza que deseja reiniciar o jogo? Todo o progresso será perdido.');
+    if (confirmed) {
+        resetGame();
+        switchScreen(gameScreen, setupScreen);
+    }
+}
+
 // Reset game
 function resetGame() {
     // Stop any running timers
@@ -998,7 +1050,79 @@ function resetGame() {
         challengeTimerSeconds: 0
     };
 
+    // Clear localStorage when resetting
+    clearGameState();
+
     switchScreen(gameoverScreen, setupScreen);
+}
+
+// LocalStorage functions
+function saveGameState() {
+    try {
+        const stateToSave = {
+            players: gameState.players,
+            currentPlayerIndex: gameState.currentPlayerIndex,
+            currentQuestionIndex: gameState.currentQuestionIndex,
+            currentRound: gameState.currentRound,
+            questions: gameState.questions,
+            revealedItems: gameState.revealedItems,
+            currentGuess: gameState.currentGuess,
+            currentGuesser: gameState.currentGuesser,
+            currentChallenger: gameState.currentChallenger,
+            playersInRound: gameState.playersInRound,
+            lastGuessPlayerId: gameState.lastGuessPlayerId,
+            guessHistory: gameState.guessHistory,
+            selectedDeckIndex: gameState.selectedDeckIndex,
+            turnTimerSeconds: gameState.turnTimerSeconds,
+            challengeTimerSeconds: gameState.challengeTimerSeconds,
+            isGameActive: gameState.players.length > 0
+        };
+        localStorage.setItem('etopGameState', JSON.stringify(stateToSave));
+    } catch (error) {
+        console.error('Error saving game state:', error);
+    }
+}
+
+function loadGameState() {
+    try {
+        const savedState = localStorage.getItem('etopGameState');
+        if (!savedState) return false;
+
+        const state = JSON.parse(savedState);
+
+        // Only load if there's an active game
+        if (!state.isGameActive) return false;
+
+        // Restore game state
+        gameState.players = state.players || [];
+        gameState.currentPlayerIndex = state.currentPlayerIndex || 0;
+        gameState.currentQuestionIndex = state.currentQuestionIndex || 0;
+        gameState.currentRound = state.currentRound || 1;
+        gameState.questions = state.questions || [];
+        gameState.revealedItems = state.revealedItems || [];
+        gameState.currentGuess = state.currentGuess || null;
+        gameState.currentGuesser = state.currentGuesser || null;
+        gameState.currentChallenger = state.currentChallenger || null;
+        gameState.playersInRound = state.playersInRound || [];
+        gameState.lastGuessPlayerId = state.lastGuessPlayerId || null;
+        gameState.guessHistory = state.guessHistory || [];
+        gameState.selectedDeckIndex = state.selectedDeckIndex || 0;
+        gameState.turnTimerSeconds = state.turnTimerSeconds || 0;
+        gameState.challengeTimerSeconds = state.challengeTimerSeconds || 0;
+
+        return true;
+    } catch (error) {
+        console.error('Error loading game state:', error);
+        return false;
+    }
+}
+
+function clearGameState() {
+    try {
+        localStorage.removeItem('etopGameState');
+    } catch (error) {
+        console.error('Error clearing game state:', error);
+    }
 }
 
 // Utility functions
